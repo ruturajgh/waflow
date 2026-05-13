@@ -1,6 +1,8 @@
 const baseAction = {
   type: "object",
   required: ["name"],
+  additionalProperties: false,
+
   properties: {
     name: {
       type: "string",
@@ -12,19 +14,147 @@ const baseAction = {
         "open_url",
       ],
     },
-    payload: { type: "object", default: {} },
-    url: { type: "string" },
+
+    payload: {
+      type: "object",
+    },
+
+    url: {
+      type: "string",
+      format: "uri",
+    },
+
     next: {
       type: "object",
-      properties: { type: { type: "string" }, name: { type: "string" } },
+      additionalProperties: false,
+      required: ["type", "name"],
+
+      properties: {
+        type: {
+          type: "string",
+          enum: ["screen"],
+        },
+
+        name: {
+          type: "string",
+          minLength: 1,
+        },
+      },
     },
   },
-  oneOf: [
-    { required: ["payload"], not: { required: ["url"] } }, // payload actions (navigate, complete, update_data, data_exchange)
-    { required: ["url"], not: { required: ["payload"] } }, // open_url
+
+  allOf: [
+    /**
+     * navigate
+     * requires:
+     * - payload
+     * - next
+     * forbids:
+     * - url
+     */
+    {
+      if: {
+        properties: {
+          name: { const: "navigate" },
+        },
+      },
+      then: {
+        required: ["payload", "next"],
+        not: {
+          required: ["url"],
+        },
+      },
+    },
+
+    /**
+     * complete
+     * requires:
+     * - payload
+     * forbids:
+     * - url
+     * - next
+     */
+    {
+      if: {
+        properties: {
+          name: { const: "complete" },
+        },
+      },
+      then: {
+        required: ["payload"],
+        not: {
+          anyOf: [{ required: ["url"] }, { required: ["next"] }],
+        },
+      },
+    },
+
+    /**
+     * update_data
+     * requires:
+     * - payload
+     * forbids:
+     * - url
+     * - next
+     */
+    {
+      if: {
+        properties: {
+          name: { const: "update_data" },
+        },
+      },
+      then: {
+        required: ["payload"],
+        not: {
+          anyOf: [{ required: ["url"] }, { required: ["next"] }],
+        },
+      },
+    },
+
+    /**
+     * data_exchange
+     * requires:
+     * - payload
+     * forbids:
+     * - url
+     * - next
+     */
+    {
+      if: {
+        properties: {
+          name: { const: "data_exchange" },
+        },
+      },
+      then: {
+        required: ["payload"],
+        not: {
+          anyOf: [{ required: ["url"] }, { required: ["next"] }],
+        },
+      },
+    },
+
+    /**
+     * open_url
+     * requires:
+     * - url
+     * forbids:
+     * - payload
+     * - next
+     */
+    {
+      if: {
+        properties: {
+          name: { const: "open_url" },
+        },
+      },
+      then: {
+        required: ["url"],
+        not: {
+          anyOf: [{ required: ["payload"] }, { required: ["next"] }],
+        },
+      },
+    },
   ],
 };
-
 export const base = {
   flow: {
     type: "object",
@@ -54,7 +184,6 @@ export const base = {
       },
     },
   },
-
   screen: {
     type: "object",
     required: ["id", "layout"],
@@ -99,83 +228,83 @@ export const base = {
         min: 1,
       },
     },
-    TextSubheading: {
-      type: "object",
-      required: ["type", "text"],
-      properties: {
-        text: {
-          type: "string",
-          max: 80,
-          min: 1,
-        },
+  },
+  TextSubheading: {
+    type: "object",
+    required: ["type", "text"],
+    properties: {
+      text: {
+        type: "string",
+        max: 80,
+        min: 1,
       },
     },
-    TextBody: {
-      type: "object",
-      required: ["type", "text"],
-      properties: {
-        text: {
-          type: "string",
-          max: 4096,
-          min: 1,
-        },
+  },
+  TextBody: {
+    type: "object",
+    required: ["type", "text"],
+    properties: {
+      text: {
+        type: "string",
+        max: 4096,
+        min: 1,
       },
     },
-    TextCaption: {
-      type: "object",
-      required: ["type", "text"],
-      properties: {
-        text: {
-          type: "string",
-          max: 409,
-          min: 1,
-        },
+  },
+  TextCaption: {
+    type: "object",
+    required: ["type", "text"],
+    properties: {
+      text: {
+        type: "string",
+        max: 409,
+        min: 1,
       },
     },
-    Footer: {
-      type: "object",
-      required: ["type", "label", "on-click-action"],
-      properties: {
-        type: { type: "string", default: "Footer", bindable: true },
-        label: {
-          type: "string",
-          default: "Continue",
-          bindable: true,
-          minLength: 1,
-          maxLength: 256,
-        },
-        "left-caption": {
-          type: "string",
-          bindable: true,
-          minLength: 1,
-          maxLength: 256,
-        },
-        "right-caption": {
-          type: "string",
-          bindable: true,
-          minLength: 1,
-          maxLength: 256,
-        },
-        "center-caption": {
-          type: "string",
-          bindable: true,
-          minLength: 1,
-          maxLength: 256,
-        },
-        enabled: { type: "boolean", default: true, bindable: true },
-        "on-click-action": baseAction,
+  },
+  Footer: {
+    type: "object",
+    required: ["type", "label", "on-click-action"],
+    properties: {
+      type: { type: "string", default: "Footer", bindable: true },
+      label: {
+        type: "string",
+        default: "Continue",
+        bindable: true,
+        minLength: 1,
+        maxLength: 256,
       },
-      oneOf: [
-        {
-          required: ["center-caption"],
-          not: { required: ["left-caption", "right-caption"] },
-        },
-        {
-          required: ["left-caption", "right-caption"],
-          not: { required: ["center-caption"] },
-        },
-      ],
+      "left-caption": {
+        type: "string",
+        bindable: true,
+        minLength: 1,
+        maxLength: 256,
+      },
+      "right-caption": {
+        type: "string",
+        bindable: true,
+        minLength: 1,
+        maxLength: 256,
+      },
+      "center-caption": {
+        type: "string",
+        bindable: true,
+        minLength: 1,
+        maxLength: 256,
+      },
+      enabled: { type: "boolean", default: true, bindable: true },
+      "on-click-action": baseAction,
     },
+    oneOf: [
+      {
+        required: ["center-caption"],
+        not: { required: ["left-caption", "right-caption"] },
+      },
+      {
+        required: ["left-caption", "right-caption"],
+        not: { required: ["center-caption"] },
+      },
+    ],
   },
 };
 
@@ -184,7 +313,7 @@ export const patches = {
     {
       op: "move",
       from: "flow.properties.data_channel_uri",
-      to: "flow,properties.endpoint_uri",
+      to: "flow.properties.endpoint_uri",
     },
   ],
   "5.1": [

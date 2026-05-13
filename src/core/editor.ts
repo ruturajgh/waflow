@@ -1,6 +1,7 @@
 import { createNode, normalize } from "./normalize";
 import type { Node, nodeRegistry } from "./node";
 import { EditorCommandManager } from "./commands";
+import { resolveVersion } from "./utils";
 export type EditorState = {
   rootId: string;
   nodes: Map<string, Node>;
@@ -11,10 +12,11 @@ export type EditorState = {
 export class Editor {
   state;
   commandManager;
-
+  validate;
   constructor(flowData: {}) {
     this.state = this.initEditor(flowData);
     this.commandManager = new EditorCommandManager(this.state.nodes as any);
+    this.validate = resolveVersion(5.1);
   }
 
   get editorState() {

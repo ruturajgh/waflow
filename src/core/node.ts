@@ -1,239 +1,266 @@
-type NodeType = "flow" | "screen" | "layout" | "component";
+import { generateId } from "./utils";
+
+export type NodeKind = "flow" | "screen" | "layout" | "component";
 
 export type Node = {
   id: string;
-  type: NodeType;
+
+  /**
+   * Registry key
+   * Example:
+   * "TextHeading"
+   * "Footer"
+   * "screen"
+   */
+  type: string;
+
+  /**
+   * High-level category
+   */
+  kind: NodeKind;
 
   parentId?: string;
+
   childrenIds: string[];
 
+  /**
+   * Instantiated runtime props
+   */
   props: Record<string, any>;
+
+  /**
+   * Runtime-only metadata
+   * Never serialized into Flow JSON
+   */
+  runtime?: {
+    hydrated?: boolean;
+    dirty?: boolean;
+    selected?: boolean;
+    createdAt?: number;
+  };
 };
 
-const ActionProps = {
-  type: "object",
-  required: true,
-  properties: {
-    name: {
-      type: "string",
-      enum: [
-        "navigate",
-        "complete",
-        "data_exchange",
-        "update_data",
-        "open_url",
-      ],
-      required: true,
-    },
-    payload: {
-      type: "object",
-      default: {},
-      required: false,
-    },
-    // optional next screen for navigation
-    next: {
-      type: "object",
-      required: false,
-      properties: {
-        type: { type: "string", default: "screen" },
-        name: { type: "string" },
-      },
-    },
-    url: {
-      type: "string",
-      required: false,
-    },
-  },
+export type RuntimeDefinition = {
+  /**
+   * High-level node category
+   */
+  kind: NodeKind;
+
+  /**
+   * Default runtime props
+   */
+  defaults?: Record<string, any>;
+
+  /**
+   * Editor/runtime metadata
+   */
+  editor?: {
+    bindable?: string[];
+
+    removable?: boolean;
+
+    movable?: boolean;
+
+    duplicatable?: boolean;
+  };
+
+  /**
+   * Runtime instantiator
+   */
+  create: (input: Node, parentId?: string) => Node;
 };
 
-export const nodeRegistry = {
-  flow: {
+export type RuntimeRegistry = Record<string, RuntimeDefinition>;
+
+const createRuntimeNode = (
+  type: string,
+  definition: RuntimeDefinition,
+  input: Record<string, any>,
+  parentId?: string,
+): Node => {
+  return {
+    id: generateId(definition.kind),
+
+    type,
+
+    kind: definition.kind,
+
+    parentId: parentId || undefined,
+
+    childrenIds: [],
+
     props: {
-      version: {
-        default: "1.0",
-        type: "string",
-        required: true,
-      },
+      ...(definition.defaults ?? {}),
+      ...input,
+    },
 
-      data_api_version: {
-        default: undefined,
-        type: "string",
-      },
+    runtime: {
+      hydrated: true,
+      createdAt: Date.now(),
+    },
+  };
+};
 
-      routing_model: {
-        default: undefined,
-        type: "object",
-      },
+export const nodeRegistry: RuntimeRegistry = {
+  flow: {
+    kind: "flow",
 
-      data_channel_uri: {
-        default: undefined,
-        type: "string",
-      },
+    defaults: {
+      version: "1.0",
+      data_api_version: undefined,
+      routing_model: undefined,
+      data_channel_uri: undefined,
+    },
+
+    create(input, parentId) {
+      return createRuntimeNode("flow", nodeRegistry.flow, input, parentId);
     },
   },
 
   screen: {
-    props: {
-      id: {
-        default: "",
-        type: "string",
-        required: true,
-      },
+    kind: "screen",
 
-      terminal: {
-        default: false,
-        type: "boolean",
-      },
+    defaults: {
+      terminal: false,
+      success: false,
+      title: "",
+      refresh_on_back: false,
+      data: {},
+    },
 
-      success: {
-        default: false,
-        type: "boolean",
-      },
-
-      title: {
-        default: "",
-        type: "string",
-      },
-
-      refresh_on_back: {
-        default: false,
-        type: "boolean",
-      },
-
-      data: {
-        default: undefined,
-        type: "object",
-      },
+    create(input, parentId) {
+      return createRuntimeNode("screen", nodeRegistry.screen, input, parentId);
     },
   },
 
   layout: {
-    props: {
-      type: {
-        default: "SingleColumnLayout",
-        type: "string",
-      },
+    kind: "layout",
+
+    defaults: {
+      type: "SingleColumnLayout",
+    },
+
+    create(input, parentId) {
+      return createRuntimeNode("layout", nodeRegistry.layout, input, parentId);
     },
   },
 
-  component: {
-    props: {},
-  },
-
   TextHeading: {
-    props: {
-      text: {
-        default: "This is a heading",
-        bindable: true,
-        required: true,
-        type: "string",
-      },
-      visible: {
-        default: true,
-        bindable: true,
-        type: "boolean",
-      },
+    kind: "component",
+
+    defaults: {
+      text: "This is a heading",
+      visible: true,
+    },
+
+    editor: {
+      bindable: ["text", "visible"],
+    },
+
+    create(input, parentId) {
+      return createRuntimeNode(
+        "TextHeading",
+        nodeRegistry.TextHeading,
+        input,
+        parentId,
+      );
     },
   },
 
   TextSubheading: {
-    props: {
-      text: {
-        default: "This is a subheading",
-        bindable: true,
-        required: false,
-        type: "string",
-      },
+    kind: "component",
 
-      visible: {
-        default: true,
-        bindable: true,
-        type: "boolean",
-      },
+    defaults: {
+      text: "This is a subheading",
+      visible: true,
+    },
+
+    editor: {
+      bindable: ["text", "visible"],
+    },
+
+    create(input, parentId) {
+      return createRuntimeNode(
+        "TextSubheading",
+        nodeRegistry.TextSubheading,
+        input,
+        parentId,
+      );
     },
   },
 
   TextBody: {
-    props: {
-      text: {
-        default: "This is body text",
-        bindable: true,
-        required: true,
-        type: "string",
-      },
-      visible: {
-        default: true,
-        bindable: true,
-        type: "boolean",
-      },
-      "font-weight": {
-        default: "normal",
-        bindable: true,
-        values: {
-          Bold: "bold",
-          Italic: "italic",
-          BoldItalic: "bold_italic",
-          Normal: "normal",
-        },
-        type: "enum",
-        required: false,
-      },
-      strikethrough: {
-        type: "boolean",
-        bindable: true,
-        default: false,
-        required: false,
-      },
+    kind: "component",
+
+    defaults: {
+      text: "This is body text",
+      visible: true,
+      "font-weight": "normal",
+      strikethrough: false,
+    },
+
+    editor: {
+      bindable: ["text", "visible", "font-weight", "strikethrough"],
+    },
+
+    create(input, parentId) {
+      return createRuntimeNode(
+        "TextBody",
+        nodeRegistry.TextBody,
+        input,
+        parentId,
+      );
     },
   },
 
   TextCaption: {
-    props: {
-      text: {
-        default: "This is body text",
-        bindable: true,
-        required: true,
-        type: "string",
-      },
-      visible: {
-        default: true,
-        bindable: true,
-        type: "boolean",
-      },
-      "font-weight": {
-        default: "normal",
-        bindable: true,
-        values: {
-          Bold: "bold",
-          Italic: "italic",
-          BoldItalic: "bold_italic",
-          Normal: "normal",
-        },
-        type: "enum",
-        required: false,
-      },
-      strikethrough: {
-        type: "boolean",
-        bindable: true,
-        default: false,
-        required: false,
-      },
+    kind: "component",
+
+    defaults: {
+      text: "This is caption text",
+      visible: true,
+      "font-weight": "normal",
+      strikethrough: false,
+    },
+
+    editor: {
+      bindable: ["text", "visible", "font-weight", "strikethrough"],
+    },
+
+    create(input, parentId) {
+      return createRuntimeNode(
+        "TextCaption",
+        nodeRegistry.TextCaption,
+        input,
+        parentId,
+      );
     },
   },
 
   Footer: {
-    props: {
-      label: {
-        default: "Continue",
-        bindable: true,
-        required: false,
-        type: "string",
-      },
-      "left-caption": { type: "string", bindable: true },
-      "center-caption": { type: "string", bindable: true },
-      "right-caption": { type: "string", bindable: true },
-      enabled: { type: "boolean", default: true, bindable: true },
-      "on-click-action": ActionProps,
+    kind: "component",
+
+    defaults: {
+      label: "Continue",
+      "left-caption": "",
+      "center-caption": "",
+      "right-caption": "",
+      enabled: true,
+      "on-click-action": {},
+    },
+
+    editor: {
+      bindable: [
+        "label",
+        "left-caption",
+        "center-caption",
+        "right-caption",
+        "enabled",
+      ],
+    },
+
+    create(input, parentId) {
+      return createRuntimeNode("Footer", nodeRegistry.Footer, input, parentId);
     },
   },
 };
@@ -241,7 +268,7 @@ export const nodeRegistry = {
 export const patches = {
   "4.0": {
     form: {
-      props: {
+      defaults: {
         type: {
           default: "Form",
           type: "string",
@@ -259,13 +286,8 @@ export const patches = {
   },
   "5.1": {
     TextBody: {
-      props: {
-        markdown: {
-          default: false,
-          type: "boolean",
-          bindable: true,
-          required: false,
-        },
+      defaults: {
+        markdown: false,
       },
     },
   },

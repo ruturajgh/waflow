@@ -5,9 +5,8 @@
  */
 
 import type { EditorState } from "./editor";
-import { nodeRegistry } from "./node";
 import type { Node } from "./node";
-import { generateId } from "./utils";
+import { nodeRegistry } from "./node";
 
 /**
  * -----------------------------
@@ -19,26 +18,13 @@ export function createNode(
   data: any,
   parentId?: string,
 ): Node {
-  const config = nodeRegistry[type];
+  const node = nodeRegistry[type];
 
-  if (!config) {
+  if (!node) {
     throw new Error(`Unknown node type: ${type}`);
   }
-  const props = {};
 
-  // 1. apply defaults + overrides only
-  for (const key in config.props) {
-    const schema = config.props[key];
-    props[key] = data[key] !== undefined ? data[key] : schema.default;
-  }
-
-  return {
-    id: data.id || generateId(type),
-    type,
-    parentId,
-    childrenIds: [],
-    props,
-  };
+  return node.create(data, parentId);
 }
 
 /**
