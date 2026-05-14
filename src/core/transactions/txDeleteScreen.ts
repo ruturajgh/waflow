@@ -35,19 +35,9 @@ export class TxDeleteScreen implements Transaction {
   }
 
   invert(state: EditorState): Transaction {
-    if (!this.deletedScreen) {
-      return new EmptyTransaction();
-    }
-    return new TxAddScreen(this.deletedScreen.parentId, this.deletedScreen);
+    return new TxAddScreen(
+      this.deletedScreen.parentId,
+      this.deletedScreen.props,
+    );
   }
-}
-
-class EmptyTransaction implements Transaction {
-  apply(state: EditorState): EditorState {
-    throw new Error("Method not implemented.");
-  }
-  invert(state: EditorState): Transaction {
-    throw new Error("Method not implemented.");
-  }
-  addToHistory?: boolean | undefined;
 }

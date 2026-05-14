@@ -1,4 +1,10 @@
+import { useFlowEditor } from "../hooks/useFlowEditor";
+import { useSubscribe } from "../hooks/useSubscribe";
+
 export const Nodes = (props: any) => {
+  const selectedScreenId = useSubscribe(editor => editor.selectedScreen)
+  const screen = useSubscribe(editor => editor.state.nodes.get(selectedScreenId))
+  const editor = useFlowEditor()
   return (
     <div
       style={{
@@ -47,7 +53,76 @@ export const Nodes = (props: any) => {
         }}
       >
         {props.children}
+        <ScreenForm data={screen} setData={editor.updateNodeProps}></ScreenForm>
       </div>
+    </div>
+  );
+};
+
+const ScreenForm = ({ data, setData }) => {
+  return (
+    <div className="space-y-4 flex border-2">
+      <input
+        type="text"
+        defaultValue={data.props.title}
+        onChange={(e) =>
+          setData(
+            data.id,
+            {
+              ...data.props,
+              title: e.target.value,
+            })
+        }
+        placeholder="Title"
+        className="border p-2 rounded w-full"
+      />
+
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={data.props.terminal}
+          onChange={(e) =>
+            setData(
+              data.id, {
+              ...data.props,
+              terminal: e.target.checked,
+            })
+          }
+        />
+        Terminal
+      </label>
+
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={data.props.success}
+          onChange={(e) =>
+            setData(
+              data.id, {
+              ...data.props,
+              success: e.target.checked,
+            })
+          }
+        />
+        Success
+      </label>
+
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={data.props.refresh_on_back}
+          onChange={(e) =>
+            setData(
+              data.id,
+              {
+                ...data.props,
+                refresh_on_back: e.target.checked,
+              }
+            )
+          }
+        />
+        Refresh On Back
+      </label>
     </div>
   );
 };

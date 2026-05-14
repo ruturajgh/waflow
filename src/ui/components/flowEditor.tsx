@@ -6,7 +6,7 @@ export const Root = (props: any) => {
   const editorRef = useRef<any>(null);
 
   if (!editorRef.current) {
-    editorRef.current = props.flowData
+    editorRef.current = props.flowData;
   }
 
   return (
@@ -34,5 +34,3 @@ export const Root = (props: any) => {
     </FlowEditorContext.Provider>
   );
 };
-
-

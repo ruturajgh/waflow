@@ -47,7 +47,7 @@ function App() {
   return (
     <>
       <section id="center">
-        <FlowEditor.Root flowData={data} >
+        <FlowEditor.Root flowData={data}>
           <FlowEditor.Section direction="row">
             <FlowEditor.Section>
               <FlowEditor.Screens></FlowEditor.Screens>

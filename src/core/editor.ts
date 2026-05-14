@@ -16,11 +16,19 @@ export type EditorState = {
 export class Editor {
   txManager;
   validate;
- 
-  constructor(flowData: {}) { 
+  listeners;
+
+  selectedScreen: string | null;
+
+  constructor(flowData: {}) {
+    this.listeners = new Set<() => void>();
     this.validate = resolveVersion(5.1);
     const state = this.initEditor(flowData);
+
+
     this.txManager = new TransactionManager(state);
+
+    this.selectScreen(state.nodes.values().next().value?.id)
   }
 
   get state() {
@@ -35,26 +43,48 @@ export class Editor {
     this.txManager.dispatch(
       new TxAddScreen(this.state.rootId, { title: "new screen" }),
     );
+    this.emit();
   }
 
   deleteScreen(id: string) {
     this.txManager.dispatch(new TxDeleteScreen(id));
+    this.emit();
   }
 
-  updateNodeProps(nodeId: string, props: Record<string, any>) {
-    this.txManager.dispatch(new TxUpdateNodeProps(nodeId, props));
+  updateNodeProps = (nodeId: string, props: Record<string, any>) => { 
+    this.txManager.dispatch(new TxUpdateNodeProps(nodeId, props)); 
+    this.emit();
   }
 
   undo() {
     this.txManager.undo();
+    this.emit();
   }
 
   redo() {
     this.txManager.redo();
+    this.emit();
   }
 
-  subscribe(fn:Function){ 
-    this.txManager.subscribe(fn)
-  }
+  selectScreen = (id: string) => {
+    this.selectedScreen = id;
+    this.emit();
+  };
+  unSelectScreen = () => {
+    this.selectedScreen = null;
+  };
 
+  emit = () => {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  };
+
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
 }

@@ -2,15 +2,11 @@ import { useFlowEditor } from "../hooks/useFlowEditor";
 import { useSubscribe } from "../hooks/useSubscribe";
 
 export const Screens = (props: any) => {
+  const screenIds = useSubscribe((editor) => {
+    const root = editor.state.nodes.get(editor.state.rootId);
 
-  const screenIds = useSubscribe(
-    state => {
-      const root =
-        state.nodes.get(state.rootId)
-
-      return root.childrenIds
-    }
-  )
+    return root.childrenIds;
+  });
 
   return (
     <div
@@ -59,8 +55,10 @@ export const Screens = (props: any) => {
           gap: "12px",
         }}
       >
-        {screenIds.map(id => (
-          <h1 key={id}>{id}</h1>
+        {screenIds.map((id) => (
+          <Screen key={id} id={id}>
+            {id}
+          </Screen>
         ))}
         <AddScreen></AddScreen>
       </div>
@@ -68,9 +66,28 @@ export const Screens = (props: any) => {
   );
 };
 
+function Screen(props) {
+  const selectedScreenId = useSubscribe((editor) => editor.selectedScreen);
+
+  const screen = useSubscribe((editor) => editor.state.nodes.get(props.id));
+
+  const selectScreen = useFlowEditor().selectScreen;
+ 
+  return (
+    <div
+      style={{
+        border: selectedScreenId === props.id ? "2px solid white" : "none",
+      }}
+      onClick={() => selectScreen(props.id)}
+    >
+      {screen.props.title}
+    </div>
+  );
+}
+
 export const AddScreen = (props: any) => {
   const editor = useFlowEditor();
-
+  
   return (
     <div>
       {" "}

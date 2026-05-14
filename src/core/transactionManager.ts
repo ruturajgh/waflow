@@ -40,7 +40,6 @@ type HistoryEvent = {
  */
 export class TransactionManager {
   state: EditorState;
-  private listeners: Set<T>
   /**
    * Undo / redo stacks
    */
@@ -61,7 +60,6 @@ export class TransactionManager {
 
   constructor(initial: EditorState) {
     this.state = initial;
-    this.listeners = new Set()
   }
 
   /**
@@ -117,7 +115,6 @@ export class TransactionManager {
     }
 
     this.lastTransactionTime = now;
-    this.emit()
   }
 
   /**
@@ -146,7 +143,6 @@ export class TransactionManager {
     });
 
     this.currentBatch = [];
-    this.emit()
   }
 
   /**
@@ -187,7 +183,6 @@ export class TransactionManager {
       transactions: redoTransactions.reverse(),
       timestamp: Date.now(),
     });
-    this.emit()
   }
 
   /**
@@ -216,7 +211,6 @@ export class TransactionManager {
       transactions: undoTransactions.reverse(),
       timestamp: Date.now(),
     });
-    this.emit()
   }
 
   /**
@@ -228,18 +222,5 @@ export class TransactionManager {
     this.undoStack = [];
     this.redoStack = [];
     this.currentBatch = [];
-  }
-
-  subscribe(listener: Function) {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-    };
-  }
-
-  emit() {
-    for (const listener of this.listeners) {
-      listener(this.state);
-    }
   }
 }

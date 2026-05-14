@@ -6,6 +6,7 @@ export class TxUpdateNodeProps implements Transaction {
   private nodeId: string;
   private props: any;
   constructor(nodeId: string, props: Record<string, any>) {
+   
     this.nodeId = nodeId;
     this.props = props;
   }
@@ -22,7 +23,7 @@ export class TxUpdateNodeProps implements Transaction {
         ...this.props,
       },
     };
-
+    console.log(updated)
     return {
       ...state,
       nodes: new Map(state.nodes).set(this.nodeId, updated),
@@ -30,7 +31,8 @@ export class TxUpdateNodeProps implements Transaction {
   }
 
   invert(state: EditorState): Transaction {
-    const node = state.nodes.get(this.nodeId);
+    
+    const node = state.nodes.get(this.nodeId); 
 
     if (!node) {
       throw new Error("Node not found");
