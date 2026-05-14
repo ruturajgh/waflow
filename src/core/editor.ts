@@ -25,10 +25,9 @@ export class Editor {
     this.validate = resolveVersion(5.1);
     const state = this.initEditor(flowData);
 
-
     this.txManager = new TransactionManager(state);
 
-    this.selectScreen(state.nodes.values().next().value?.id)
+    this.selectScreen(state.nodes.values().next().value?.id);
   }
 
   get state() {
@@ -51,10 +50,10 @@ export class Editor {
     this.emit();
   }
 
-  updateNodeProps = (nodeId: string, props: Record<string, any>) => { 
-    this.txManager.dispatch(new TxUpdateNodeProps(nodeId, props)); 
+  updateNodeProps = (nodeId: string, props: Record<string, any>) => {
+    this.txManager.dispatch(new TxUpdateNodeProps(nodeId, props));
     this.emit();
-  }
+  };
 
   undo() {
     this.txManager.undo();

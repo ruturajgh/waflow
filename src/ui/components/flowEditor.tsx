@@ -20,10 +20,7 @@ export const Root = (props: any) => {
           minHeight: 0,
 
           width: "100%",
-
-          border: "2px solid",
-          borderRadius: "13px",
-
+ 
           overflow: "hidden",
           padding: "13px",
         }}

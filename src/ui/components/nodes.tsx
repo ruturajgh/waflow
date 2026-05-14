@@ -1,10 +1,15 @@
+import { Input } from "@/components/ui/input";
 import { useFlowEditor } from "../hooks/useFlowEditor";
 import { useSubscribe } from "../hooks/useSubscribe";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Nodes = (props: any) => {
-  const selectedScreenId = useSubscribe(editor => editor.selectedScreen)
-  const screen = useSubscribe(editor => editor.state.nodes.get(selectedScreenId))
-  const editor = useFlowEditor()
+  const selectedScreenId = useSubscribe((editor) => editor.selectedScreen);
+  const screen = useSubscribe((editor) =>
+    editor.state.nodes.get(selectedScreenId),
+  );
+  const editor = useFlowEditor();
   return (
     <div
       style={{
@@ -53,7 +58,22 @@ export const Nodes = (props: any) => {
         }}
       >
         {props.children}
-        <ScreenForm data={screen} setData={editor.updateNodeProps}></ScreenForm>
+        <Tabs defaultValue="Nodes" className="w-[400px]">
+          <TabsList>
+            <TabsTrigger value="Nodes">Nodes</TabsTrigger>
+            <TabsTrigger value="Properties">Properties</TabsTrigger>
+          </TabsList>
+          <TabsContent value="Nodes">
+            Make changes to your account here.
+          </TabsContent>
+          <TabsContent value="Properties">
+            {" "}
+            <ScreenForm
+              data={screen}
+              setData={editor.updateNodeProps}
+            ></ScreenForm>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
@@ -61,68 +81,63 @@ export const Nodes = (props: any) => {
 
 const ScreenForm = ({ data, setData }) => {
   return (
-    <div className="space-y-4 flex border-2">
-      <input
+    <div className="  flex flex-col  ">
+      <Input
         type="text"
         defaultValue={data.props.title}
         onChange={(e) =>
-          setData(
-            data.id,
-            {
-              ...data.props,
-              title: e.target.value,
-            })
+          setData(data.id, {
+            ...data.props,
+            title: e.target.value,
+          })
         }
         placeholder="Title"
-        className="border p-2 rounded w-full"
       />
 
-      <label className="flex items-center gap-2">
-        <input
+      <Label className="flex items-center gap-2">
+        <Input
           type="checkbox"
+          className="w-min"
           checked={data.props.terminal}
           onChange={(e) =>
-            setData(
-              data.id, {
+            setData(data.id, {
               ...data.props,
               terminal: e.target.checked,
             })
           }
         />
         Terminal
-      </label>
+      </Label>
 
-      <label className="flex items-center gap-2">
-        <input
+      <Label className="flex items-center gap-2">
+        <Input
+          className="w-min"
           type="checkbox"
           checked={data.props.success}
           onChange={(e) =>
-            setData(
-              data.id, {
+            setData(data.id, {
               ...data.props,
               success: e.target.checked,
             })
           }
         />
         Success
-      </label>
+      </Label>
 
-      <label className="flex items-center gap-2">
-        <input
+      <Label className="flex items-center gap-2">
+        <Input
           type="checkbox"
+          className="w-min"
           checked={data.props.refresh_on_back}
           onChange={(e) =>
-            setData(
-              data.id,
-              {
-                ...data.props,
-                refresh_on_back: e.target.checked,
-              }
-            )
+            setData(data.id, {
+              ...data.props,
+              refresh_on_back: e.target.checked,
+            })
           }
         />
         Refresh On Back
-      </label>
+      </Label>
     </div>
   );
 };

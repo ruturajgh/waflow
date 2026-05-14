@@ -1,4 +1,12 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "ignoreDeprecations": "6.0"
+  },
+  "exclude": ["node_modules/@base-ui"],
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

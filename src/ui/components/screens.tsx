@@ -72,7 +72,7 @@ function Screen(props) {
   const screen = useSubscribe((editor) => editor.state.nodes.get(props.id));
 
   const selectScreen = useFlowEditor().selectScreen;
- 
+
   return (
     <div
       style={{
@@ -87,7 +87,7 @@ function Screen(props) {
 
 export const AddScreen = (props: any) => {
   const editor = useFlowEditor();
-  
+
   return (
     <div>
       {" "}

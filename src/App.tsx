@@ -44,9 +44,7 @@ function App() {
       },
     ],
   });
-  return (
-    <>
-      <section id="center">
+  return ( 
         <FlowEditor.Root flowData={data}>
           <FlowEditor.Section direction="row">
             <FlowEditor.Section>
@@ -57,8 +55,6 @@ function App() {
             {/* <FlowEditor.Preview></FlowEditor.Preview> */}
           </FlowEditor.Section>
         </FlowEditor.Root>
-      </section>
-    </>
   );
 }
 
