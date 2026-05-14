@@ -16,10 +16,8 @@ export type EditorState = {
 export class Editor {
   txManager;
   validate;
-  listeners;
-
-  constructor(flowData: {}) {
-    this.listeners = new Set();
+ 
+  constructor(flowData: {}) { 
     this.validate = resolveVersion(5.1);
     const state = this.initEditor(flowData);
     this.txManager = new TransactionManager(state);
@@ -54,16 +52,9 @@ export class Editor {
   redo() {
     this.txManager.redo();
   }
-  subscribe(listener: Function) {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-    };
+
+  subscribe(fn:Function){ 
+    this.txManager.subscribe(fn)
   }
 
-  emit() {
-    for (const listener of this.listeners) {
-      listener(this.state);
-    }
-  }
 }

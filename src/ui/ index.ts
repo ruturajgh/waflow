@@ -1,3 +1,16 @@
-import { FlowEditor } from "./FlowEditor";
+import { Root } from "./components/flowEditor";
+import { AddNode, Nodes } from "./components/nodes";
+import { Preview } from "./components/preview";
+import { AddScreen, Screens, ScreenSelector } from "./components/screens";
+import { Section } from "./components/section";
 
-export { FlowEditor };
+export const FlowEditor = {
+  Root,
+  Screens,
+  AddScreen,
+  ScreenSelector,
+  Preview,
+  Section,
+  Nodes,
+  AddNode,
+};

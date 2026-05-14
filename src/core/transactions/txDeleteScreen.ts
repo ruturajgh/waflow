@@ -4,7 +4,7 @@ import { TxAddScreen } from "./txAddScreen";
 
 export class TxDeleteScreen implements Transaction {
   private nodeId: string;
-  private deletedScreen: any
+  private deletedScreen: any;
 
   constructor(nodeId: string) {
     this.nodeId = nodeId;
@@ -14,7 +14,7 @@ export class TxDeleteScreen implements Transaction {
     const screen = state.nodes.get(this.nodeId);
     if (!screen) return state;
 
-    this.deletedScreen = screen
+    this.deletedScreen = screen;
     const parent = state.nodes.get(screen.parentId);
 
     if (!parent) return state;
@@ -35,7 +35,9 @@ export class TxDeleteScreen implements Transaction {
   }
 
   invert(state: EditorState): Transaction {
-    if (!this.deletedScreen) { return new EmptyTransaction() }
+    if (!this.deletedScreen) {
+      return new EmptyTransaction();
+    }
     return new TxAddScreen(this.deletedScreen.parentId, this.deletedScreen);
   }
 }

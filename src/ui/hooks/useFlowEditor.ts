@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FlowEditorContext } from "../FlowEditor";
+import { FlowEditorContext } from "../components/flowEditor";
 
 export const useFlowEditor = () => {
   const ctx = useContext(FlowEditorContext);

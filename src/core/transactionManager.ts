@@ -40,7 +40,7 @@ type HistoryEvent = {
  */
 export class TransactionManager {
   state: EditorState;
-
+  private listeners: Set<T>
   /**
    * Undo / redo stacks
    */
@@ -61,6 +61,7 @@ export class TransactionManager {
 
   constructor(initial: EditorState) {
     this.state = initial;
+    this.listeners = new Set()
   }
 
   /**
@@ -79,7 +80,7 @@ export class TransactionManager {
    */
   dispatch(tx: Transaction) {
     const now = Date.now();
-    console.log(this.state)
+
     const shouldAddToHistory = tx.addToHistory !== false;
 
     /**
@@ -95,13 +96,10 @@ export class TransactionManager {
      */
     let inverse: Transaction | null = null;
 
-
-
     /**
      * Apply transaction
      */
     this.state = tx.apply(this.state);
-    console.log(this.state);
 
     if (shouldAddToHistory) {
       inverse = tx.invert(this.state);
@@ -119,6 +117,7 @@ export class TransactionManager {
     }
 
     this.lastTransactionTime = now;
+    this.emit()
   }
 
   /**
@@ -147,6 +146,7 @@ export class TransactionManager {
     });
 
     this.currentBatch = [];
+    this.emit()
   }
 
   /**
@@ -170,7 +170,6 @@ export class TransactionManager {
      * Apply inverse transactions
      */
     for (const tx of event.transactions) {
-      console.log(tx);
       this.state = tx.apply(this.state);
       /**
        * Build redo transaction
@@ -179,7 +178,6 @@ export class TransactionManager {
       const redoTx = tx.invert(this.state);
 
       redoTransactions.push(redoTx);
-
     }
 
     /**
@@ -189,6 +187,7 @@ export class TransactionManager {
       transactions: redoTransactions.reverse(),
       timestamp: Date.now(),
     });
+    this.emit()
   }
 
   /**
@@ -206,19 +205,18 @@ export class TransactionManager {
     for (const tx of event.transactions) {
       this.state = tx.apply(this.state);
       /**
-     * Build inverse for future undo
-     */
+       * Build inverse for future undo
+       */
       const undoTx = tx.invert(this.state);
 
       undoTransactions.push(undoTx);
-
-
     }
 
     this.undoStack.push({
       transactions: undoTransactions.reverse(),
       timestamp: Date.now(),
     });
+    this.emit()
   }
 
   /**
@@ -230,5 +228,18 @@ export class TransactionManager {
     this.undoStack = [];
     this.redoStack = [];
     this.currentBatch = [];
+  }
+
+  subscribe(listener: Function) {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  emit() {
+    for (const listener of this.listeners) {
+      listener(this.state);
+    }
   }
 }
