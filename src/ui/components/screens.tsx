@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useFlowEditor } from "../hooks/useFlowEditor";
 import { useSubscribe } from "../hooks/useSubscribe";
 
@@ -7,7 +8,7 @@ export const Screens = (props: any) => {
 
     return root.childrenIds;
   });
-
+ 
   return (
     <div
       style={{
@@ -76,7 +77,7 @@ function Screen(props) {
   return (
     <div
       style={{
-        border: selectedScreenId === props.id ? "2px solid white" : "none",
+        border: selectedScreenId === props.id ? "2px solid black" : "none",
       }}
       onClick={() => selectScreen(props.id)}
     >
@@ -89,11 +90,11 @@ export const AddScreen = (props: any) => {
   const editor = useFlowEditor();
 
   return (
-    <div>
-      {" "}
-      <button onClick={() => editor.undo()}>undo screen butotn </button>
-      <button onClick={() => editor.redo()}>redo screen butotn </button>
-      <button onClick={() => editor.addScreen()}>add screen butotn </button>
+    <div className="flex flex-col w-min ">
+      
+      <Button onClick={() => editor.undo()}>undo screen butotn </Button>
+      <Button onClick={() => editor.redo()}>redo screen butotn </Button>
+      <Button onClick={() => editor.addScreen()}>add screen butotn </Button>
     </div>
   );
 };

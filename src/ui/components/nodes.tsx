@@ -3,6 +3,8 @@ import { useFlowEditor } from "../hooks/useFlowEditor";
 import { useSubscribe } from "../hooks/useSubscribe";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 export const Nodes = (props: any) => {
   const selectedScreenId = useSubscribe((editor) => editor.selectedScreen);
@@ -10,6 +12,20 @@ export const Nodes = (props: any) => {
     editor.state.nodes.get(selectedScreenId),
   );
   const editor = useFlowEditor();
+
+  const nodes = useSubscribe(
+    (editor) => editor.state.nodes
+  )
+
+  const layout = nodes.get(
+    screen?.childrenIds?.[0]
+  )
+
+  const componentIds =
+    layout?.childrenIds || []
+
+    console.log(nodes)
+
   return (
     <div
       style={{
@@ -37,6 +53,7 @@ export const Nodes = (props: any) => {
         }}
       >
         Nodes layer for whatsapp flows
+        <Button onClick={() => editor.addNode()}>Add <PlusCircle /></Button>
       </div>
 
       {/* scroll area */}
@@ -64,7 +81,14 @@ export const Nodes = (props: any) => {
             <TabsTrigger value="Properties">Properties</TabsTrigger>
           </TabsList>
           <TabsContent value="Nodes">
-            Make changes to your account here.
+            <div className="space-y-4">
+              {componentIds.map((id: string) => (
+                <NodeRenderer
+                  key={id}
+                  id={id}
+                />
+              ))}
+            </div>
           </TabsContent>
           <TabsContent value="Properties">
             {" "}
@@ -145,3 +169,104 @@ const ScreenForm = ({ data, setData }) => {
 export const AddNode = (props: any) => {
   return <div></div>;
 };
+
+
+
+interface TextHeadingNode {
+  id: string
+  type: "TextHeading"
+  props: {
+    text: string
+    visible?: boolean
+  }
+}
+
+interface TextHeadingProps {
+  node: TextHeadingNode
+  selected?: boolean
+
+  onSelect?: (id: string) => void
+
+  onUpdate?: (
+    id: string,
+    updates: Partial<TextHeadingNode["props"]>
+  ) => void
+}
+
+export function TextHeading({
+  node,
+  selected,
+  onSelect,
+  onUpdate,
+}: TextHeadingProps) {
+  if (node.props.visible === false) {
+    return null
+  } 
+  return (
+    <div
+      onClick={() => onSelect?.(node.id)}
+      className={`
+        relative rounded-md p-2 transition
+        ${selected ? "ring-2 ring-primary" : ""}
+        hover:bg-muted/50
+      `}
+    >
+      <div
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={(e) => { 
+          console.log(e, onUpdate)
+          onUpdate?.(node.id, {
+            text: e.currentTarget.textContent || "",
+          })
+        }}
+        className="text-3xl font-bold outline-none"
+      >
+        {node.props.text}
+      </div>
+    </div>
+  )
+}
+
+export const componentRegistry: Record<
+  string,
+  React.ComponentType<any>
+> = {
+  TextHeading: TextHeading,
+}
+
+
+interface Props {
+  id: string
+}
+
+export function NodeRenderer({ id }: Props) {
+  const editor = useFlowEditor()
+
+  const node = useSubscribe((editor) =>
+    editor.state.nodes.get(id)
+  )
+
+  if (!node) {
+    return null
+  } 
+
+  const Renderer =
+    componentRegistry[node.type]
+
+  if (!Renderer) {
+    return (
+      <div className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
+        Unsupported component: {node.type}
+      </div>
+    )
+  }
+
+  return (
+    <Renderer
+      node={node}
+      editor={editor} 
+      onUpdate={editor.updateNodeProps}
+    />
+  )
+}

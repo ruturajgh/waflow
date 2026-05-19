@@ -1,5 +1,4 @@
-import { patches, base } from "./schema";
-
+ 
 /**
  * Semantic version compare
  */
@@ -119,7 +118,7 @@ function applyOp(schema: any, op: any) {
 /**
  * Resolve schema version
  */
-export function resolveVersion(targetVersion: string | number) {
+export function resolveVersion(base, patches, targetVersion: string | number) {
   const order = Object.keys(patches).sort((a, b) =>
     a.localeCompare(b, undefined, { numeric: true }),
   );

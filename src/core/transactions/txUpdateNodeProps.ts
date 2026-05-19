@@ -5,6 +5,8 @@ import type { Node } from "../node";
 export class TxUpdateNodeProps implements Transaction {
   private nodeId: string;
   private props: any;
+  private previousProps: any
+
   constructor(nodeId: string, props: Record<string, any>) {
     this.nodeId = nodeId;
     this.props = props;
@@ -15,14 +17,15 @@ export class TxUpdateNodeProps implements Transaction {
 
     if (!node) return state;
 
+    this.previousProps = node.props
+
     const updated: Node = {
       ...node,
       props: {
         ...node.props,
         ...this.props,
       },
-    };
-    console.log(updated);
+    }; 
     return {
       ...state,
       nodes: new Map(state.nodes).set(this.nodeId, updated),
@@ -36,12 +39,6 @@ export class TxUpdateNodeProps implements Transaction {
       throw new Error("Node not found");
     }
 
-    const previousProps: Record<string, any> = {};
-
-    for (const key of Object.keys(this.props)) {
-      previousProps[key] = node.props[key];
-    }
-
-    return new TxUpdateNodeProps(this.nodeId, previousProps);
+    return new TxUpdateNodeProps(this.nodeId, this.previousProps);
   }
 }

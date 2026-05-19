@@ -3,6 +3,7 @@ import { Editor } from "./core";
 import { FlowEditor } from "./ui/ index";
 
 function App() {
+  
   const data = new Editor({
     version: "7.3",
     screens: [
@@ -44,6 +45,7 @@ function App() {
       },
     ],
   });
+
   return ( 
         <FlowEditor.Root flowData={data}>
           <FlowEditor.Section direction="row">
