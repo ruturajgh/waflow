@@ -10,7 +10,6 @@ import { BooleanAtom } from "./atoms/Boolean";
 import { InputAtom } from "./atoms/Input";
 
 export function Footer({ node, onUpdate }: any) {
- 
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">

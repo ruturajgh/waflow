@@ -22,7 +22,7 @@ export function EditableText({
       spellCheck={false}
       onBlur={(e) => onChange(e.currentTarget.textContent || "")}
       className={cn(
-        "text-base outline-none subtext",
+        "text-base outline-none subtext text-start",
         fontClassName,
         strikethrough && "line-through",
         className,

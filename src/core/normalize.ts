@@ -13,15 +13,9 @@ function buildComponent(
 ) {
   const node = createNode(child.type, child, parentId);
   nodes.set(node.id, node);
-  return node;
-}
 
-function buildLayout(layout: any, parentId: string, nodes: Map<string, Node>) {
-  const node = createNode("layout", layout, parentId);
-  nodes.set(node.id, node);
-
-  for (const child of layout.children || []) {
-    const childNode = buildComponent(child, node.id, nodes);
+  for (const grandChild of child.children ?? []) {
+    const childNode = buildComponent(grandChild, node.id, nodes);
     node.childrenIds.push(childNode.id);
   }
 
@@ -32,7 +26,8 @@ function buildScreen(screen: any, parentId: string, nodes: Map<string, Node>) {
   const node = createNode("screen", screen, parentId);
   nodes.set(node.id, node);
 
-  const layoutNode = buildLayout(screen.layout, node.id, nodes);
+  const layoutNode = buildComponent(screen.layout, node.id, nodes);
+
   node.childrenIds.push(layoutNode.id);
 
   return node;

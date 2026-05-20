@@ -121,7 +121,7 @@ export default {
       },
     },
   },
-  layout: {
+  SingleColumnLayout: {
     "x-kind": "layout",
 
     type: "object",
@@ -144,7 +144,7 @@ export default {
       },
     },
   },
-  form: {
+  Form: {
     "x-kind": "form",
 
     type: "object",
@@ -158,7 +158,10 @@ export default {
         type: "string",
         minLength: 1,
       },
-
+      type: {
+        type: "string",
+        default: "Form",
+      },
       "init-values": {
         type: "object",
         default: {},
@@ -365,6 +368,178 @@ export default {
         "x-binding": {
           allowed: true,
           acceptedTypes: ["boolean"],
+        },
+      },
+    },
+  },
+  CheckboxGroup: {
+    "x-kind": "component",
+
+    "x-element-meta": {
+      name: "CheckboxGroup",
+      label: "Checkbox Group",
+      group: "selection",
+      "group-label": "Selection",
+    },
+
+    type: "object",
+
+    required: ["type", "name", "data-source", "label"],
+
+    additionalProperties: false,
+
+    properties: {
+      type: {
+        type: "string",
+        const: "CheckboxGroup",
+      },
+
+      name: {
+        type: "string",
+        minLength: 1,
+      },
+
+      "data-source": {
+        type: "array",
+
+        description: "List of selectable items",
+
+        items: {
+          type: "object",
+
+          required: ["id", "title", "enabled"],
+
+          properties: {
+            id: { type: "string", minLength: 1, default:'item-1' },
+            title: { type: "string", minLength: 1, default:'Item 1'  },
+            description: { type: "string", minLength: 1, default:'Description-1'},
+            metadata: { type: "string", minLength: 1, default:'item-1'},
+            enabled: { type: "boolean", default: true },
+
+            // v5+
+            image: { type: "string" },
+            "alt-text": { type: "string" },
+            color: {
+              type: "string",
+              pattern: "^#[0-9A-Fa-f]{6}$",
+            },
+
+            // v6+
+            "on-select-action": {
+              type: "object",
+            },
+
+            "on-unselect-action": {
+              type: "object",
+            },
+          },
+        },
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["array"],
+        },
+      },
+
+      "min-selected-items": {
+        type: "integer",
+        minimum: 0,
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["number"],
+        },
+      },
+
+      "max-selected-items": {
+        type: "integer",
+        minimum: 1,
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["number"],
+        },
+      },
+
+      enabled: {
+        type: "boolean",
+        default: true,
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["boolean"],
+        },
+      },
+
+      label: {
+        type: "string",
+        minLength: 1,
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["string"],
+        },
+      },
+
+      required: {
+        type: "boolean",
+        default: false,
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["boolean"],
+        },
+      },
+
+      visible: {
+        type: "boolean",
+        default: true,
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["boolean"],
+        },
+      },
+
+      "on-select-action": {
+        type: "object",
+      },
+
+      description: {
+        type: "string",
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["string"],
+        },
+      },
+
+      "init-value": {
+        type: "array",
+        items: { type: "string" },
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["array"],
+        },
+      },
+
+      "error-message": {
+        type: "string",
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["string"],
+        },
+      },
+
+      "media-size": {
+        type: "string",
+        enum: ["regular", "large"],
+
+        "x-binding": {
+          allowed: true,
+          acceptedTypes: ["string"],
         },
       },
     },

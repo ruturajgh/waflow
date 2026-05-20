@@ -1,3 +1,5 @@
+import runtimeSchema from "./schema/runtimeSchema";
+
 /**
  * Semantic version compare
  */
@@ -161,4 +163,8 @@ export function extractDefaultsFromSchema(schema: any) {
   }
 
   return defaults;
+}
+
+export function getField(nodeType: string, field: string) {
+  return runtimeSchema[nodeType]?.properties?.[field];
 }

@@ -4,55 +4,55 @@ import { cn } from "@/lib/utils";
 import { componentRegistry } from "./renderers/registry";
 
 interface Props {
-    id: string;
+  id: string;
 }
 type NodeFrameProps = {
-    selected?: boolean;
-    children: React.ReactNode;
-    onClick?: () => void;
+  selected?: boolean;
+  children: React.ReactNode;
+  onClick?: () => void;
 };
 
 export function NodeFrame({ selected, children, onClick }: NodeFrameProps) {
-    return (
-        <div
-            onClick={onClick}
-            className={cn(
-                "relative rounded-md border border-transparent mx-2 p-2 transition",
-                "hover:bg-muted/50",
-                selected && "ring-1  ring-primary",
-            )}
-        >
-            {children}
-        </div>
-    );
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "relative rounded-md border border-transparent mx-2 p-2  transition",
+        "hover:bg-muted/50",
+        selected && "ring-1  ring-primary",
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function NodeRenderer({ id }: Props) {
-    const editor = useFlowEditor();
+  const editor = useFlowEditor();
 
-    const node = useSubscribe((editor) => editor.state.nodes.get(id));
+  const node = useSubscribe((editor) => editor.state.nodes.get(id));
 
-    const selectedComponent = useSubscribe((editor) => editor.selectedComponent);
+  const selectedComponent = useSubscribe((editor) => editor.selectedComponent);
 
-    if (!node) {
-        return null;
-    }
+  if (!node) {
+    return null;
+  }
 
-    const Renderer = componentRegistry[node.type];
+  const Renderer = componentRegistry[node.type];
 
-    if (!Renderer) {
-        return (
-            <div className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
-                Unsupported component: {node.type}
-            </div>
-        );
-    }
+  if (!Renderer) {
     return (
-        <NodeFrame
-            selected={selectedComponent === node.id}
-            onClick={() => editor.selectComponent(node.id)}
-        >
-            <Renderer node={node} editor={editor} onUpdate={editor.updateNodeProps} />
-        </NodeFrame>
+      <div className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
+        Unsupported component: {node.type}
+      </div>
     );
+  }
+  return (
+    <NodeFrame
+      selected={selectedComponent === node.id}
+      onClick={() => editor.selectComponent(node.id)}
+    >
+      <Renderer node={node} editor={editor} onUpdate={editor.updateNodeProps} />
+    </NodeFrame>
+  );
 }

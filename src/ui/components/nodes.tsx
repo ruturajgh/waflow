@@ -5,7 +5,7 @@ import { AddNodeDropdown } from "./AddNodeDropdown";
 import { BooleanAtom } from "./renderers/atoms/Boolean";
 import { EditableText } from "./renderers/atoms/Text";
 import { NodeRenderer } from "./Render";
- 
+
 export const Nodes = (props: any) => {
   const editor = useFlowEditor();
 
