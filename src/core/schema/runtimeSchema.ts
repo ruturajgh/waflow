@@ -25,7 +25,7 @@ export default {
         type: "object",
         required: ["title",],
         properties: {
- 
+
             terminal: {
                 type: "boolean",
             },
@@ -61,7 +61,7 @@ export default {
     },
     TextSubheading: {
         type: "object",
-        required: [ "text"],
+        required: ["text"],
         properties: {
             text: {
                 type: "string",
@@ -72,7 +72,7 @@ export default {
     },
     TextBody: {
         type: "object",
-        required: [ "text"],
+        required: ["text"],
         properties: {
             text: {
                 type: "string",
@@ -83,10 +83,11 @@ export default {
     },
     TextCaption: {
         type: "object",
-        required: [ "text"],
+        required: ["text"],
         properties: {
             text: {
                 type: "string",
+                default: "This is a caption",
                 max: 409,
                 min: 1,
             },
@@ -123,17 +124,17 @@ export default {
                 maxLength: 256,
             },
             enabled: { type: "boolean", default: true, bindable: true },
-            "on-click-action": { },
+            "on-click-action": {},
         },
         oneOf: [
             {
                 required: ["center-caption"],
-        not: { required: ["left-caption", "right-caption"] },
-    },
+                not: { required: ["left-caption", "right-caption"] },
+            },
             {
-    required: ["left-caption", "right-caption"],
-        not: { required: ["center-caption"] },
-},
+                required: ["left-caption", "right-caption"],
+                not: { required: ["center-caption"] },
+            },
         ],
     },
 }

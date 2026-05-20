@@ -79,7 +79,6 @@ export class Editor {
   }
 
   updateNodeProps = (nodeId: string, props: Record<string, any>) => { 
-    console.log('im here', nodeId,props)
     this.txManager.dispatch(new TxUpdateNodeProps(nodeId, props));
     this.emit();
   };
