@@ -4,7 +4,7 @@ import { useSubscribe } from "../hooks/useSubscribe";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react"; 
+import { PlusCircle } from "lucide-react";
 import { NodeRenderer } from "./renderers/registry";
 
 export const Nodes = (props: any) => {
@@ -14,18 +14,13 @@ export const Nodes = (props: any) => {
   );
   const editor = useFlowEditor();
 
-  const nodes = useSubscribe(
-    (editor) => editor.state.nodes
-  )
+  const nodes = useSubscribe((editor) => editor.state.nodes);
 
-  const layout = nodes.get(
-    screen?.childrenIds?.[0]
-  )
+  const layout = nodes.get(screen?.childrenIds?.[0]);
 
-  const componentIds =
-    layout?.childrenIds || []
+  const componentIds = layout?.childrenIds || [];
 
-    console.log(nodes)
+  console.log(nodes);
 
   return (
     <div
@@ -54,7 +49,9 @@ export const Nodes = (props: any) => {
         }}
       >
         Nodes layer for whatsapp flows
-        <Button onClick={() => editor.addNode()}>Add <PlusCircle /></Button>
+        <Button onClick={() => editor.addNode()}>
+          Add <PlusCircle />
+        </Button>
       </div>
 
       {/* scroll area */}
@@ -84,10 +81,7 @@ export const Nodes = (props: any) => {
           <TabsContent value="Nodes">
             <div className="space-y-4">
               {componentIds.map((id: string) => (
-                <NodeRenderer
-                  key={id}
-                  id={id}
-                />
+                <NodeRenderer key={id} id={id} />
               ))}
             </div>
           </TabsContent>
@@ -166,7 +160,3 @@ const ScreenForm = ({ data, setData }) => {
     </div>
   );
 };
- 
-
-
-

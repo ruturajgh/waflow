@@ -1,151 +1,65 @@
-"use client"
- 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Button } from "@/components/ui/button";
+import { BooleanAtom } from "./atoms/Boolean";
+import { InputAtom } from "./atoms/Input";
 
-type FooterSchema = {
-  label: string
-
-  visible: boolean
-  enabled: boolean
-
-  "left-caption": string
-  "center-caption": string
-  "right-caption": string
-}
-
-type FooterProps = {
-  node: {
-    id: string
-    props: FooterSchema
-  }
-
-  selected?: boolean
-
-  onSelect?: (id: string) => void
-
-  onUpdate?: (
-    id: string,
-    props: Partial<FooterSchema>
-  ) => void
-}
-
-export function Footer({
-  node,
-  selected,
-  onSelect,
-  onUpdate,
-}: FooterProps) {
+export function Footer({ node, onUpdate }: any) {
   return (
- 
-      <div className="space-y-4">
-        {/* Preview */}
-        <div className="space-y-3">
-          <Button
-            className="w-full"
-            disabled={!node.props.enabled}
-          >
-            {node.props.label}
-          </Button>
+    <div className="space-y-4">
+      <FooterPreview props={node.props} />
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{node.props["left-caption"]}</span>
+      <div className="space-y-4 border-t pt-4">
+        <InputAtom
+          label="Button Label"
+          value={node.props.label}
+          onChange={(v) => onUpdate?.(node.id, { label: v })}
+        />
 
-            <span>{node.props["center-caption"]}</span>
+        <InputAtom
+          label="Left Caption"
+          value={node.props["left-caption"]}
+          onChange={(v) => onUpdate?.(node.id, { "left-caption": v })}
+        />
 
-            <span>{node.props["right-caption"]}</span>
-          </div>
-        </div>
+        <InputAtom
+          label="Center Caption"
+          value={node.props["center-caption"]}
+          onChange={(v) => onUpdate?.(node.id, { "center-caption": v })}
+        />
 
-        {/* Controls */}
-        <div className="space-y-4 border-t pt-4">
-          {/* Label */}
-          <div className="space-y-2">
-            <Label>Button Label</Label>
+        <InputAtom
+          label="Right Caption"
+          value={node.props["right-caption"]}
+          onChange={(v) => onUpdate?.(node.id, { "right-caption": v })}
+        />
 
-            <Input
-              value={node.props.label}
-              onChange={(e) => {
-                onUpdate?.(node.id, {
-                  label: e.target.value,
-                })
-              }}
-            />
-          </div>
+        <BooleanAtom
+          label="Visible"
+          value={node.props.visible}
+          onChange={(v) => onUpdate?.(node.id, { visible: v })}
+        />
 
-          {/* Left Caption */}
-          <div className="space-y-2">
-            <Label>Left Caption</Label>
-
-            <Input
-              value={node.props["left-caption"]}
-              onChange={(e) => {
-                onUpdate?.(node.id, {
-                  "left-caption": e.target.value,
-                })
-              }}
-            />
-          </div>
-
-          {/* Center Caption */}
-          <div className="space-y-2">
-            <Label>Center Caption</Label>
-
-            <Input
-              value={node.props["center-caption"]}
-              onChange={(e) => {
-                onUpdate?.(node.id, {
-                  "center-caption": e.target.value,
-                })
-              }}
-            />
-          </div>
-
-          {/* Right Caption */}
-          <div className="space-y-2">
-            <Label>Right Caption</Label>
-
-            <Input
-              value={node.props["right-caption"]}
-              onChange={(e) => {
-                onUpdate?.(node.id, {
-                  "right-caption": e.target.value,
-                })
-              }}
-            />
-          </div>
-
-          {/* Visible */}
-          <div className="flex items-center justify-between">
-            <Label>Visible</Label>
-
-            <Switch
-              checked={node.props.visible}
-              onCheckedChange={(checked) => {
-                onUpdate?.(node.id, {
-                  visible: checked,
-                })
-              }}
-            />
-          </div>
-
-          {/* Enabled */}
-          <div className="flex items-center justify-between">
-            <Label>Enabled</Label>
-
-            <Switch
-              checked={node.props.enabled}
-              onCheckedChange={(checked) => {
-                onUpdate?.(node.id, {
-                  enabled: checked,
-                })
-              }}
-            />
-          </div>
-        </div>
+        <BooleanAtom
+          label="Enabled"
+          value={node.props.enabled}
+          onChange={(v) => onUpdate?.(node.id, { enabled: v })}
+        />
       </div>
- 
-  )
+    </div>
+  );
+}
+
+function FooterPreview({ props }) {
+  return (
+    <div className="space-y-3">
+      <div className="flex justify-between text-xs text-muted-foreground">
+        <span>{props["left-caption"]}</span>
+        <span>{props["center-caption"]}</span>
+        <span>{props["right-caption"]}</span>
+      </div>
+
+      <Button disabled={!props.enabled} className="w-full">
+        {props.label}
+      </Button>
+    </div>
+  );
 }

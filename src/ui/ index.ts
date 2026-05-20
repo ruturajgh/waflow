@@ -11,5 +11,5 @@ export const FlowEditor = {
   ScreenSelector,
   Preview,
   Section,
-  Nodes, 
+  Nodes,
 };

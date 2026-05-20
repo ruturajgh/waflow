@@ -79,9 +79,9 @@ const createRuntimeNode = (
   parentId?: string,
 ): Node => {
   //@ts-ignore
-  const schema = runtimeSchema[type] 
+  const schema = runtimeSchema[type];
 
-  const defaults = extractDefaultsFromSchema(schema)
+  const defaults = extractDefaultsFromSchema(schema);
 
   return {
     id: generateId(schema["x-kind"]),
@@ -103,15 +103,15 @@ const createRuntimeNode = (
       hydrated: true,
       createdAt: Date.now(),
     },
-  }
-}
+  };
+};
 
 export const nodeRegistry: RuntimeRegistry = {
   flow: {
     kind: "flow",
 
     create(input, parentId) {
-      return createRuntimeNode("flow", input, parentId)
+      return createRuntimeNode("flow", input, parentId);
     },
   },
 
@@ -119,7 +119,7 @@ export const nodeRegistry: RuntimeRegistry = {
     kind: "screen",
 
     create(input, parentId) {
-      return createRuntimeNode("screen", input, parentId)
+      return createRuntimeNode("screen", input, parentId);
     },
   },
 
@@ -127,7 +127,7 @@ export const nodeRegistry: RuntimeRegistry = {
     kind: "layout",
 
     create(input, parentId) {
-      return createRuntimeNode("layout", input, parentId)
+      return createRuntimeNode("layout", input, parentId);
     },
   },
 
@@ -135,7 +135,7 @@ export const nodeRegistry: RuntimeRegistry = {
     kind: "component",
 
     create(input, parentId) {
-      return createRuntimeNode("TextHeading", input, parentId)
+      return createRuntimeNode("TextHeading", input, parentId);
     },
   },
 
@@ -143,7 +143,7 @@ export const nodeRegistry: RuntimeRegistry = {
     kind: "component",
 
     create(input, parentId) {
-      return createRuntimeNode("TextSubheading", input, parentId)
+      return createRuntimeNode("TextSubheading", input, parentId);
     },
   },
 
@@ -151,7 +151,7 @@ export const nodeRegistry: RuntimeRegistry = {
     kind: "component",
 
     create(input, parentId) {
-      return createRuntimeNode("TextBody", input, parentId)
+      return createRuntimeNode("TextBody", input, parentId);
     },
   },
 
@@ -159,7 +159,7 @@ export const nodeRegistry: RuntimeRegistry = {
     kind: "component",
 
     create(input, parentId) {
-      return createRuntimeNode("TextCaption", input, parentId)
+      return createRuntimeNode("TextCaption", input, parentId);
     },
   },
 
@@ -167,7 +167,7 @@ export const nodeRegistry: RuntimeRegistry = {
     kind: "component",
 
     create(input, parentId) {
-      return createRuntimeNode("Footer", input, parentId)
+      return createRuntimeNode("Footer", input, parentId);
     },
   },
-}
+};

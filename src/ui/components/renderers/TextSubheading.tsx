@@ -1,26 +1,23 @@
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { BooleanAtom } from "./atoms/Boolean";
+import { EditableText } from "./atoms/Text";
 
 type TextSubheadingSchema = {
-  text: string
-  visible: boolean
-}
+  text: string;
+  visible: boolean;
+};
 
 export type BaseNodeProps<T> = {
   node: {
-    id: string
-    props: T
-  }
+    id: string;
+    props: T;
+  };
 
-  selected?: boolean
+  selected?: boolean;
 
-  onSelect?: (id: string) => void
+  onSelect?: (id: string) => void;
 
-  onUpdate?: (
-    id: string,
-    props: Partial<T>
-  ) => void
-}
+  onUpdate?: (id: string, props: Partial<T>) => void;
+};
 
 export function TextSubheading({
   node,
@@ -29,34 +26,27 @@ export function TextSubheading({
   onUpdate,
 }: BaseNodeProps<TextSubheadingSchema>) {
   return (
- 
-      <div className="space-y-4">
-        <h3
-          contentEditable
-          suppressContentEditableWarning
-          spellCheck={false}
-          onBlur={(e) => {
-            onUpdate?.(node.id, {
-              text: e.currentTarget.textContent || "",
-            })
-          }}
-          className="text-xl font-semibold   outline-none"
-        >
-          {node.props.text}
-        </h3>
-
-        <div className="flex items-center justify-between border-t pt-3">
-          <Label>Visible</Label>
-
-          <Switch
-            checked={node.props.visible}
-            onCheckedChange={(checked) => {
-              onUpdate?.(node.id, {
-                visible: checked,
-              })
-            }}
-          />
-        </div>
+    <div
+      onClick={() => onSelect?.(node.id)}
+      className={`
+        relative rounded-md p-2 transition
+        ${selected ? "ring-2 ring-primary" : ""}
+        hover:bg-muted/50
+      `}
+    >
+      <EditableText
+        value={node.props.text}
+        onChange={(v) => onUpdate?.(node.id, { text: v })}
+        className="text-3xl font-bold outline-none"
+      />
+      {/* Settings */}
+      <div className="border-t pt-3">
+        <BooleanAtom
+          label="Visible"
+          value={node.props.visible}
+          onChange={(v) => onUpdate?.(node.id, { visible: v })}
+        />
       </div>
-  )
+    </div>
+  );
 }

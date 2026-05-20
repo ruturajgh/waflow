@@ -1,134 +1,72 @@
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { cn } from "@/lib/utils"
-import type { BaseNodeProps } from "./TextSubheading"
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import runtimeSchema from "@/core/schema/runtimeSchema";
+import { cn } from "@/lib/utils";
+import { BooleanAtom } from "./atoms/Boolean";
+import { SelectAtom } from "./atoms/Select";
+import { EditableText } from "./atoms/Text";
 
 type TextBodySchema = {
-  text: string
-  visible: boolean
-  "font-weight": "normal" | "medium" | "semibold" | "bold"
-  strikethrough: boolean
-}
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import runtimeSchema from "@/core/schema/runtimeSchema"
+  text: string;
+  visible: boolean;
+  "font-weight": "normal" | "medium" | "semibold" | "bold";
+  strikethrough: boolean;
+};
 
 type TextBodyProps = {
   node: {
-    id: string
-    props: TextBodySchema
-  }
-
-  selected?: boolean
-
-  onSelect?: (id: string) => void
-
-  onUpdate?: (
-    id: string,
-    props: Partial<TextBodySchema>
-  ) => void
-}
+    id: string;
+    props: TextBodySchema;
+  };
+  onUpdate?: (id: string, props: Partial<TextBodySchema>) => void;
+};
 
 const fontWeightMap = {
   normal: "font-normal",
   medium: "font-medium",
   semibold: "font-semibold",
   bold: "font-bold",
-}
+};
 
-export function TextBody({
-  node,
-  selected,
-  onSelect,
-  onUpdate,
-}: TextBodyProps) {
-  
-  const nodeSchema = runtimeSchema[node.type].properties['font-weight'].enum
+export function TextBody({ node, onUpdate }: TextBodyProps) {
+  const fontWeightOptions =
+    runtimeSchema[node.type].properties["font-weight"].enum;
 
   return (
-
     <div className="space-y-4">
       {/* Preview */}
-      <p
-        contentEditable
-        suppressContentEditableWarning
-        spellCheck={false}
-        onBlur={(e) => {
-          onUpdate?.(node.id, {
-            text: e.currentTarget.textContent || "",
-          })
-        }}
-        className={cn(
-          "text-base outline-none",
-          fontWeightMap[node.props["font-weight"]],
-          node.props.strikethrough && "line-through"
-        )}
-      >
-        {node.props.text}
-      </p>
+      <EditableText
+        value={node.props.text}
+        onChange={(v) => onUpdate?.(node.id, { text: v })}
+        fontClassName={fontWeightMap[node.props["font-weight"]]}
+        strikethrough={node.props.strikethrough}
+      />
 
       {/* Controls */}
       <div className="space-y-4 border-t pt-4">
         {/* Visible */}
-        <div className="flex items-center justify-between">
-          <Label>Visible</Label>
 
-          <Switch
-            checked={node.props.visible}
-            onCheckedChange={(checked) => {
-              onUpdate?.(node.id, {
-                visible: checked,
-              })
-            }}
-          />
-        </div>
+        <BooleanAtom
+          label="Visible"
+          value={node.props.visible}
+          onChange={(v) => onUpdate?.(node.id, { visible: v })}
+        />
 
         {/* Strikethrough */}
-        <div className="flex items-center justify-between">
-          <Label>Strikethrough</Label>
-
-          <Switch
-            checked={node.props.strikethrough}
-            onCheckedChange={(checked) => {
-              onUpdate?.(node.id, {
-                strikethrough: checked,
-              })
-            }}
-          />
-        </div>
+        <BooleanAtom
+          label="Strikethrough"
+          value={node.props.strikethrough}
+          onChange={(v) => onUpdate?.(node.id, { strikethrough: v })}
+        />
 
         {/* Font Weight */}
-        <div className="space-y-2">
-          <Label>Font Weight</Label>
-
-          <Select
-            value={node.props["font-weight"]}
-            onValueChange={(value) => {
-              onUpdate?.(node.id, {
-                "font-weight": value as TextBodySchema["font-weight"],
-              })
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select weight" />
-            </SelectTrigger>
-
-            <SelectContent>{
-              nodeSchema.map((value: string) =>
-                <SelectItem value={value}>
-                  {value}
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-        </div>
+        <SelectAtom
+          label="Font Weight"
+          value={node.props["font-weight"]}
+          options={fontWeightOptions}
+          onChange={(v) => onUpdate?.(node.id, { "font-weight": v })}
+        />
       </div>
     </div>
-  )
+  );
 }

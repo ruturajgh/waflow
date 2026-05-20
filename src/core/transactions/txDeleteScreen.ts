@@ -25,7 +25,7 @@ export class TxDeleteScreen implements Transaction {
     };
 
     const nodes = new Map(state.nodes);
-    screen.childrenIds.forEach(layout => nodes.delete(layout))
+    screen.childrenIds.forEach((layout) => nodes.delete(layout));
     nodes.delete(screen.id);
 
     nodes.set(updatedParent.id, updatedParent);

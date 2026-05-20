@@ -12,8 +12,8 @@ import { resolveVersion } from "./utils";
 export type EditorState = {
   rootId: string;
   nodes: Map<string, Node>;
-  validate: any
-  errors: Record<string, any>
+  validate: any;
+  errors: Record<string, any>;
 };
 /**
  * Editor this hold the state and commands
@@ -24,21 +24,23 @@ export class Editor {
 
   selectedScreen: string | null;
 
-  constructor(flowData: {}) {
+  selectedComponent: string | null;
 
+  constructor(flowData: {}) {
     this.listeners = new Set<() => void>();
 
     const state = this.initEditor(flowData);
     state.validate = resolveVersion(runtimeSchema, [], 5.1);
-    state.errors = new Map()
+    state.errors = new Map();
 
     this.txManager = new TransactionManager(state);
 
     const flowNode = [...state.nodes.values()].find(
-      node => node.kind === 'flow'
-    )
+      (node) => node.kind === "flow",
+    );
 
-    this.selectedScreen = flowNode?.childrenIds?.[0] || null
+    this.selectedScreen = flowNode?.childrenIds?.[0] || null;
+    this.selectedComponent = null;
   }
 
   get state() {
@@ -54,31 +56,29 @@ export class Editor {
       new TxAddScreen(this.state.rootId, { title: "new_screen" }),
     );
     this.emit();
-  }
+  };
 
   deleteScreen(id: string) {
     this.txManager.dispatch(new TxDeleteScreen(id));
-    this.unSelectScreen()
+    this.unSelectScreen();
     this.emit();
   }
 
   addNode = () => {
-    if (!this.selectedScreen) throw new Error('Select a screen')
-    const layoutId= this.state.nodes.get(this.selectedScreen)?.childrenIds[0]
-    if (!layoutId) throw Error("No layoutId found") 
+    if (!this.selectedScreen) throw new Error("Select a screen");
+    const layoutId = this.state.nodes.get(this.selectedScreen)?.childrenIds[0];
+    if (!layoutId) throw Error("No layoutId found");
 
-    this.txManager.dispatch(
-      new TxAddNode('TextHeading', layoutId, {}),
-    );
+    this.txManager.dispatch(new TxAddNode("TextHeading", layoutId, {}));
     this.emit();
-  }
+  };
 
   deleteNode(id: string) {
     this.txManager.dispatch(new TxDeleteNode(id));
     this.emit();
   }
 
-  updateNodeProps = (nodeId: string, props: Record<string, any>) => { 
+  updateNodeProps = (nodeId: string, props: Record<string, any>) => {
     this.txManager.dispatch(new TxUpdateNodeProps(nodeId, props));
     this.emit();
   };
@@ -99,6 +99,16 @@ export class Editor {
   };
   unSelectScreen = () => {
     this.selectedScreen = null;
+  };
+
+  selectComponent = (id: string) => {
+    this.selectedComponent = id;
+    this.emit();
+  };
+
+  unSelectComponent = () => {
+    this.selectedComponent = null;
+    this.emit();
   };
 
   emit = () => {

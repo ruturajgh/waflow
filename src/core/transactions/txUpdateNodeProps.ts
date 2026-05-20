@@ -5,7 +5,7 @@ import type { Node } from "../node";
 export class TxUpdateNodeProps implements Transaction {
   private nodeId: string;
   private props: any;
-  private previousProps: any
+  private previousProps: any;
 
   constructor(nodeId: string, props: Record<string, any>) {
     this.nodeId = nodeId;
@@ -17,7 +17,7 @@ export class TxUpdateNodeProps implements Transaction {
 
     if (!node) return state;
 
-    this.previousProps = node.props
+    this.previousProps = node.props;
 
     const updated: Node = {
       ...node,
@@ -25,7 +25,7 @@ export class TxUpdateNodeProps implements Transaction {
         ...node.props,
         ...this.props,
       },
-    }; 
+    };
     return {
       ...state,
       nodes: new Map(state.nodes).set(this.nodeId, updated),

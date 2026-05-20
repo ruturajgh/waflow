@@ -1,4 +1,3 @@
-
 /**
  * Semantic version compare
  */
@@ -149,17 +148,17 @@ export function generateId(type: string): string {
 }
 
 export function extractDefaultsFromSchema(schema: any) {
-  const props = schema.properties ?? {}
+  const props = schema.properties ?? {};
 
-  const defaults: Record<string, any> = {}
+  const defaults: Record<string, any> = {};
 
   for (const key of Object.keys(props)) {
-    const prop = props[key]
+    const prop = props[key];
 
     if ("default" in prop) {
-      defaults[key] = prop.default
+      defaults[key] = prop.default;
     }
   }
 
-  return defaults
+  return defaults;
 }

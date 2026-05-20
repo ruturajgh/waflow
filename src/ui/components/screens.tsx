@@ -8,7 +8,7 @@ export const Screens = (props: any) => {
 
     return root.childrenIds;
   });
- 
+
   return (
     <div
       style={{
@@ -91,7 +91,6 @@ export const AddScreen = (props: any) => {
 
   return (
     <div className="flex flex-col w-min ">
-      
       <Button onClick={() => editor.undo()}>undo screen butotn </Button>
       <Button onClick={() => editor.redo()}>redo screen butotn </Button>
       <Button onClick={() => editor.addScreen()}>add screen butotn </Button>
