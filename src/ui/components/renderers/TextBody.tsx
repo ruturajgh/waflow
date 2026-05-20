@@ -9,7 +9,7 @@ type TextBodySchema = {
   "font-weight": "normal" | "medium" | "semibold" | "bold"
   strikethrough: boolean
 }
- 
+
 import {
   Select,
   SelectContent,
@@ -17,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
- 
+import runtimeSchema from "@/core/schema/runtimeSchema"
+
 type TextBodyProps = {
   node: {
     id: string
@@ -47,94 +48,87 @@ export function TextBody({
   onSelect,
   onUpdate,
 }: TextBodyProps) {
+  
+  const nodeSchema = runtimeSchema[node.type].properties['font-weight'].enum
+
   return (
- 
-      <div className="space-y-4">
-        {/* Preview */}
-        <p
-          contentEditable
-          suppressContentEditableWarning
-          spellCheck={false}
-          onBlur={(e) => {
-            onUpdate?.(node.id, {
-              text: e.currentTarget.textContent || "",
-            })
-          }}
-          className={cn(
-            "text-base outline-none",
-            fontWeightMap[node.props["font-weight"]],
-            node.props.strikethrough && "line-through"
-          )}
-        >
-          {node.props.text}
-        </p>
 
-        {/* Controls */}
-        <div className="space-y-4 border-t pt-4">
-          {/* Visible */}
-          <div className="flex items-center justify-between">
-            <Label>Visible</Label>
+    <div className="space-y-4">
+      {/* Preview */}
+      <p
+        contentEditable
+        suppressContentEditableWarning
+        spellCheck={false}
+        onBlur={(e) => {
+          onUpdate?.(node.id, {
+            text: e.currentTarget.textContent || "",
+          })
+        }}
+        className={cn(
+          "text-base outline-none",
+          fontWeightMap[node.props["font-weight"]],
+          node.props.strikethrough && "line-through"
+        )}
+      >
+        {node.props.text}
+      </p>
 
-            <Switch
-              checked={node.props.visible}
-              onCheckedChange={(checked) => {
-                onUpdate?.(node.id, {
-                  visible: checked,
-                })
-              }}
-            />
-          </div>
+      {/* Controls */}
+      <div className="space-y-4 border-t pt-4">
+        {/* Visible */}
+        <div className="flex items-center justify-between">
+          <Label>Visible</Label>
 
-          {/* Strikethrough */}
-          <div className="flex items-center justify-between">
-            <Label>Strikethrough</Label>
-
-            <Switch
-              checked={node.props.strikethrough}
-              onCheckedChange={(checked) => {
-                onUpdate?.(node.id, {
-                  strikethrough: checked,
-                })
-              }}
-            />
-          </div>
-
-          {/* Font Weight */}
-          <div className="space-y-2">
-            <Label>Font Weight</Label>
-
-            <Select
-              value={node.props["font-weight"]}
-              onValueChange={(value) => {
-                onUpdate?.(node.id, {
-                  "font-weight": value as TextBodySchema["font-weight"],
-                })
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select weight" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="normal">
-                  Normal
-                </SelectItem>
-
-                <SelectItem value="medium">
-                  Medium
-                </SelectItem>
-
-                <SelectItem value="semibold">
-                  Semibold
-                </SelectItem>
-
-                <SelectItem value="bold">
-                  Bold
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Switch
+            checked={node.props.visible}
+            onCheckedChange={(checked) => {
+              onUpdate?.(node.id, {
+                visible: checked,
+              })
+            }}
+          />
         </div>
-      </div> 
+
+        {/* Strikethrough */}
+        <div className="flex items-center justify-between">
+          <Label>Strikethrough</Label>
+
+          <Switch
+            checked={node.props.strikethrough}
+            onCheckedChange={(checked) => {
+              onUpdate?.(node.id, {
+                strikethrough: checked,
+              })
+            }}
+          />
+        </div>
+
+        {/* Font Weight */}
+        <div className="space-y-2">
+          <Label>Font Weight</Label>
+
+          <Select
+            value={node.props["font-weight"]}
+            onValueChange={(value) => {
+              onUpdate?.(node.id, {
+                "font-weight": value as TextBodySchema["font-weight"],
+              })
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select weight" />
+            </SelectTrigger>
+
+            <SelectContent>{
+              nodeSchema.map((value: string) =>
+                <SelectItem value={value}>
+                  {value}
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </div>
   )
 }

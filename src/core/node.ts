@@ -1,4 +1,5 @@
-import { generateId } from "./utils";
+import runtimeSchema from "./schema/runtimeSchema";
+import { extractDefaultsFromSchema, generateId } from "./utils";
 
 export type NodeKind = "flow" | "screen" | "layout" | "component";
 
@@ -73,24 +74,28 @@ export type RuntimeDefinition = {
 export type RuntimeRegistry = Record<string, RuntimeDefinition>;
 
 const createRuntimeNode = (
-  type: string,
-  definition: RuntimeDefinition,
+  type: string | any,
   input: Record<string, any>,
   parentId?: string,
 ): Node => {
+  //@ts-ignore
+  const schema = runtimeSchema[type] 
+
+  const defaults = extractDefaultsFromSchema(schema)
+
   return {
-    id: generateId(definition.kind),
+    id: generateId(schema["x-kind"]),
 
     type,
 
-    kind: definition.kind,
+    kind: schema["x-kind"],
 
     parentId: parentId || undefined,
 
     childrenIds: [],
 
     props: {
-      ...(definition.defaults ?? {}),
+      ...defaults,
       ...input,
     },
 
@@ -98,197 +103,71 @@ const createRuntimeNode = (
       hydrated: true,
       createdAt: Date.now(),
     },
-  };
-};
+  }
+}
 
 export const nodeRegistry: RuntimeRegistry = {
   flow: {
     kind: "flow",
 
-    defaults: {
-      version: "1.0",
-      data_api_version: undefined,
-      routing_model: undefined,
-      data_channel_uri: undefined,
-    },
-
     create(input, parentId) {
-      return createRuntimeNode("flow", nodeRegistry.flow, input, parentId);
+      return createRuntimeNode("flow", input, parentId)
     },
   },
 
   screen: {
     kind: "screen",
 
-    defaults: {
-      terminal: false,
-      success: false,
-      title: "",
-      refresh_on_back: false,
-      data: {},
-    },
-
     create(input, parentId) {
-      return createRuntimeNode("screen", nodeRegistry.screen, input, parentId);
+      return createRuntimeNode("screen", input, parentId)
     },
   },
 
   layout: {
     kind: "layout",
 
-    defaults: {
-      type: "SingleColumnLayout",
-    },
-
     create(input, parentId) {
-      return createRuntimeNode("layout", nodeRegistry.layout, input, parentId);
+      return createRuntimeNode("layout", input, parentId)
     },
   },
 
   TextHeading: {
     kind: "component",
 
-    defaults: {
-      text: "This is a heading",
-      visible: true,
-    },
-
-    editor: {
-      bindable: ["text", "visible"],
-    },
-
     create(input, parentId) {
-      return createRuntimeNode(
-        "TextHeading",
-        nodeRegistry.TextHeading,
-        input,
-        parentId,
-      );
+      return createRuntimeNode("TextHeading", input, parentId)
     },
   },
 
   TextSubheading: {
     kind: "component",
 
-    defaults: {
-      text: "This is a subheading",
-      visible: true,
-    },
-
-    editor: {
-      bindable: ["text", "visible"],
-    },
-
     create(input, parentId) {
-      return createRuntimeNode(
-        "TextSubheading",
-        nodeRegistry.TextSubheading,
-        input,
-        parentId,
-      );
+      return createRuntimeNode("TextSubheading", input, parentId)
     },
   },
 
   TextBody: {
     kind: "component",
 
-    defaults: {
-      text: "This is body text",
-      visible: true,
-      "font-weight": "normal",
-      strikethrough: false,
-    },
-
-    editor: {
-      bindable: ["text", "visible", "font-weight", "strikethrough"],
-    },
-
     create(input, parentId) {
-      return createRuntimeNode(
-        "TextBody",
-        nodeRegistry.TextBody,
-        input,
-        parentId,
-      );
+      return createRuntimeNode("TextBody", input, parentId)
     },
   },
 
   TextCaption: {
     kind: "component",
 
-    defaults: {
-      text: "This is caption text",
-      visible: true,
-      "font-weight": "normal",
-      strikethrough: false,
-    },
-
-    editor: {
-      bindable: ["text", "visible", "font-weight", "strikethrough"],
-    },
-
     create(input, parentId) {
-      return createRuntimeNode(
-        "TextCaption",
-        nodeRegistry.TextCaption,
-        input,
-        parentId,
-      );
+      return createRuntimeNode("TextCaption", input, parentId)
     },
   },
 
   Footer: {
     kind: "component",
 
-    defaults: {
-      label: "Continue",
-      "left-caption": "",
-      "center-caption": "",
-      "right-caption": "",
-      enabled: true,
-      "on-click-action": {},
-    },
-
-    editor: {
-      bindable: [
-        "label",
-        "left-caption",
-        "center-caption",
-        "right-caption",
-        "enabled",
-      ],
-    },
-
     create(input, parentId) {
-      return createRuntimeNode("Footer", nodeRegistry.Footer, input, parentId);
+      return createRuntimeNode("Footer", input, parentId)
     },
   },
-};
-
-export const patches = {
-  "4.0": {
-    form: {
-      defaults: {
-        type: {
-          default: "Form",
-          type: "string",
-        },
-        name: {
-          default: "Form layer",
-          type: "string",
-        },
-        init_values: {
-          default: undefined,
-          type: "object",
-        },
-      },
-    },
-  },
-  "5.1": {
-    TextBody: {
-      defaults: {
-        markdown: false,
-      },
-    },
-  },
-};
+}
