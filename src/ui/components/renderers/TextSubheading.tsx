@@ -1,5 +1,12 @@
+import { Text } from "lucide-react";
 import { BooleanAtom } from "./atoms/Boolean";
 import { EditableText } from "./atoms/Text";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type TextSubheadingSchema = {
   text: string;
@@ -21,32 +28,28 @@ export type BaseNodeProps<T> = {
 
 export function TextSubheading({
   node,
-  selected,
-  onSelect,
   onUpdate,
 }: BaseNodeProps<TextSubheadingSchema>) {
   return (
-    <div
-      onClick={() => onSelect?.(node.id)}
-      className={`
-        relative rounded-md p-2 transition
-        ${selected ? "ring-2 ring-primary" : ""}
-        hover:bg-muted/50
-      `}
-    >
-      <EditableText
-        value={node.props.text}
-        onChange={(v) => onUpdate?.(node.id, { text: v })}
-        className="text-3xl font-bold outline-none"
-      />
-      {/* Settings */}
-      <div className="border-t pt-3">
-        <BooleanAtom
-          label="Visible"
-          value={node.props.visible}
-          onChange={(v) => onUpdate?.(node.id, { visible: v })}
-        />
-      </div>
-    </div>
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="item-1">
+        <AccordionTrigger className=" items-center gap-2">
+          <Text /> {node.type + " " + node.props.text}
+        </AccordionTrigger>
+        <AccordionContent>
+          <EditableText
+            value={node.props.text}
+            onChange={(v) => onUpdate?.(node.id, { text: v })}
+            className="text-3xl font-bold outline-none"
+          />
+
+          <BooleanAtom
+            label="Visible"
+            value={node.props.visible}
+            onChange={(v) => onUpdate?.(node.id, { visible: v })}
+          />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }

@@ -1,6 +1,5 @@
 import type { EditorState } from "../editor";
-import type { Node } from "../node";
-import { createNode } from "../normalize";
+import { createNode, type Node } from "../node";
 import type { Transaction } from "../transactionManager";
 import { TxDeleteNode } from "./txDeleteNode";
 

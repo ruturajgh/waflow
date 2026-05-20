@@ -1,12 +1,15 @@
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 
 export function BooleanAtom({ value, label, onChange }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className=" flex flex-row gap-2  w-min">
+      <Input
+        checked={value}
+        type="checkbox"
+        onChange={(e) => onChange(e.target.checked)}
+      />
       <Label>{label}</Label>
-
-      <Switch checked={value} onCheckedChange={onChange} />
     </div>
   );
 }

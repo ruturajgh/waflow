@@ -1,31 +1,5 @@
-/**
- * -----------------------------
- * Types
- * -----------------------------
- */
-
 import type { EditorState } from "./editor";
-import type { Node } from "./node";
-import { nodeRegistry } from "./node";
-
-/**
- * -----------------------------
- * Node Factory
- * -----------------------------
- */
-export function createNode(
-  type: keyof typeof nodeRegistry,
-  data: any,
-  parentId?: string,
-): Node {
-  const node = nodeRegistry[type];
-
-  if (!node) {
-    throw new Error(`Unknown node type: ${type}`);
-  }
-
-  return node.create(data, parentId);
-}
+import { createNode, type Node } from "./node";
 
 /**
  * -----------------------------
@@ -37,7 +11,7 @@ function buildComponent(
   parentId: string,
   nodes: Map<string, Node>,
 ) {
-  const node = createNode(child.type || "component", child, parentId);
+  const node = createNode(child.type, child, parentId);
   nodes.set(node.id, node);
   return node;
 }
@@ -102,5 +76,7 @@ export function normalize(input: any): EditorState {
   return {
     rootId: root.id,
     nodes,
+    validate: undefined,
+    errors: {},
   };
 }

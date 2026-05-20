@@ -64,12 +64,12 @@ export class Editor {
     this.emit();
   }
 
-  addNode = () => {
+  addNode = (type: string) => {
     if (!this.selectedScreen) throw new Error("Select a screen");
     const layoutId = this.state.nodes.get(this.selectedScreen)?.childrenIds[0];
     if (!layoutId) throw Error("No layoutId found");
 
-    this.txManager.dispatch(new TxAddNode("TextHeading", layoutId, {}));
+    this.txManager.dispatch(new TxAddNode(type, layoutId, {}));
     this.emit();
   };
 

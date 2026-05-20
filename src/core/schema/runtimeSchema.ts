@@ -144,8 +144,36 @@ export default {
       },
     },
   },
+  form: {
+    "x-kind": "form",
+
+    type: "object",
+
+    required: ["name"],
+
+    additionalProperties: false,
+
+    properties: {
+      name: {
+        type: "string",
+        minLength: 1,
+      },
+
+      "init-values": {
+        type: "object",
+        default: {},
+      },
+    },
+  },
   TextHeading: {
     "x-kind": "component",
+
+    "x-element-meta": {
+      name: "TextHeading",
+      label: "Heading",
+      group: "text",
+      "group-label": "Text",
+    },
 
     type: "object",
     required: ["text"],
@@ -176,6 +204,13 @@ export default {
   TextSubheading: {
     "x-kind": "component",
 
+    "x-element-meta": {
+      name: "TextSubheading",
+      label: "Subheading",
+      group: "text",
+      "group-label": "Text",
+    },
+
     type: "object",
     required: ["text"],
 
@@ -204,6 +239,12 @@ export default {
   },
   TextBody: {
     "x-kind": "component",
+    "x-element-meta": {
+      name: "TextBody",
+      label: "Body Text",
+      group: "text",
+      "group-label": "Text",
+    },
 
     type: "object",
 
@@ -265,6 +306,12 @@ export default {
   TextCaption: {
     "x-kind": "component",
 
+    "x-element-meta": {
+      name: "TextCaption",
+      label: "Caption Text",
+      group: "text",
+      "group-label": "Text",
+    },
     type: "object",
 
     required: ["text"],

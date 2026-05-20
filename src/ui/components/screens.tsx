@@ -1,13 +1,19 @@
 import { Button } from "@/components/ui/button";
+import { PlusCircle, Redo, Undo } from "lucide-react";
 import { useFlowEditor } from "../hooks/useFlowEditor";
 import { useSubscribe } from "../hooks/useSubscribe";
 
 export const Screens = (props: any) => {
   const screenIds = useSubscribe((editor) => {
     const root = editor.state.nodes.get(editor.state.rootId);
-
     return root.childrenIds;
   });
+
+  const selectScreen = useFlowEditor().selectScreen;
+
+  const onClick = (id: string) => {
+    selectScreen(id);
+  };
 
   return (
     <div
@@ -15,31 +21,19 @@ export const Screens = (props: any) => {
         display: "flex",
         flexDirection: "column",
 
-        flex: 1,
-
         // CRITICAL
         minHeight: 0,
         minWidth: 0,
 
-        border: "2px solid",
-        borderRadius: "13px",
-
         overflow: "hidden",
       }}
+      className="space-y-2"
     >
-      {/* fixed header */}
-      <div
-        style={{
-          padding: "13px",
-          borderBottom: "1px solid #ddd",
-          flexShrink: 0,
-        }}
-      >
-        screens layer for whatsapp flows
-      </div>
+      <AddScreenButton />
 
       {/* scroll area */}
       <div
+        className="gap-2"
         style={{
           flex: 1,
 
@@ -49,55 +43,53 @@ export const Screens = (props: any) => {
           overflowY: "auto",
           overflowX: "hidden",
 
-          padding: "13px",
-
           display: "flex",
           flexDirection: "column",
-          gap: "12px",
         }}
       >
         {screenIds.map((id) => (
-          <Screen key={id} id={id}>
-            {id}
-          </Screen>
+          <Screen key={id} id={id} onClick={onClick} />
         ))}
-        <AddScreen></AddScreen>
       </div>
     </div>
   );
 };
 
-function Screen(props) {
+function Screen({ id, onClick }: any) {
   const selectedScreenId = useSubscribe((editor) => editor.selectedScreen);
 
-  const screen = useSubscribe((editor) => editor.state.nodes.get(props.id));
+  const screen = useSubscribe((editor) => editor.state.nodes.get(id));
 
-  const selectScreen = useFlowEditor().selectScreen;
+  const isSelected = selectedScreenId === id;
 
   return (
     <div
-      style={{
-        border: selectedScreenId === props.id ? "2px solid black" : "none",
-      }}
-      onClick={() => selectScreen(props.id)}
+      className={`${isSelected ? "border-black border-2" : "none"} bg-gray-300  rounded-md`}
+      onClick={() => onClick(id)}
     >
       {screen.props.title}
     </div>
   );
 }
 
-export const AddScreen = (props: any) => {
+export const AddScreenButton = (props: any) => {
   const editor = useFlowEditor();
 
   return (
-    <div className="flex flex-col w-min ">
-      <Button onClick={() => editor.undo()}>undo screen butotn </Button>
-      <Button onClick={() => editor.redo()}>redo screen butotn </Button>
-      <Button onClick={() => editor.addScreen()}>add screen butotn </Button>
+    <div className="flex flex-row justify-end gap-1 ">
+      <Button size={"icon-sm"} title="undo" onClick={() => editor.undo()}>
+        <Undo />
+      </Button>
+      <Button size={"icon-sm"} title="Redo" onClick={() => editor.redo()}>
+        <Redo />{" "}
+      </Button>
+      <Button
+        size={"icon-sm"}
+        title="Add Screen"
+        onClick={() => editor.addScreen()}
+      >
+        <PlusCircle />{" "}
+      </Button>
     </div>
   );
-};
-
-export const ScreenSelector = (props: any) => {
-  return <div></div>;
 };

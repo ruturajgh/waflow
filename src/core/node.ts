@@ -73,7 +73,7 @@ export type RuntimeDefinition = {
 
 export type RuntimeRegistry = Record<string, RuntimeDefinition>;
 
-const createRuntimeNode = (
+export const createNode = (
   type: string | any,
   input: Record<string, any>,
   parentId?: string,
@@ -104,70 +104,4 @@ const createRuntimeNode = (
       createdAt: Date.now(),
     },
   };
-};
-
-export const nodeRegistry: RuntimeRegistry = {
-  flow: {
-    kind: "flow",
-
-    create(input, parentId) {
-      return createRuntimeNode("flow", input, parentId);
-    },
-  },
-
-  screen: {
-    kind: "screen",
-
-    create(input, parentId) {
-      return createRuntimeNode("screen", input, parentId);
-    },
-  },
-
-  layout: {
-    kind: "layout",
-
-    create(input, parentId) {
-      return createRuntimeNode("layout", input, parentId);
-    },
-  },
-
-  TextHeading: {
-    kind: "component",
-
-    create(input, parentId) {
-      return createRuntimeNode("TextHeading", input, parentId);
-    },
-  },
-
-  TextSubheading: {
-    kind: "component",
-
-    create(input, parentId) {
-      return createRuntimeNode("TextSubheading", input, parentId);
-    },
-  },
-
-  TextBody: {
-    kind: "component",
-
-    create(input, parentId) {
-      return createRuntimeNode("TextBody", input, parentId);
-    },
-  },
-
-  TextCaption: {
-    kind: "component",
-
-    create(input, parentId) {
-      return createRuntimeNode("TextCaption", input, parentId);
-    },
-  },
-
-  Footer: {
-    kind: "component",
-
-    create(input, parentId) {
-      return createRuntimeNode("Footer", input, parentId);
-    },
-  },
 };

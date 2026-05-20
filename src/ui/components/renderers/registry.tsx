@@ -1,11 +1,20 @@
 import { useFlowEditor } from "@/ui/hooks/useFlowEditor";
 import { useSubscribe } from "@/ui/hooks/useSubscribe";
 import { TextHeading } from "./TextHeading";
-import { NodeFrame } from "./NodeFrame";
 import { TextSubheading } from "./TextSubheading";
 import { TextBody } from "./TextBody";
 import { TextCaption } from "./TextCaption";
 import { Footer } from "./Footer";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  id: string;
+}
+type NodeFrameProps = {
+  selected?: boolean;
+  children: React.ReactNode;
+  onClick?: () => void;
+};
 
 export const componentRegistry: Record<string, React.ComponentType<any>> = {
   TextHeading,
@@ -15,8 +24,19 @@ export const componentRegistry: Record<string, React.ComponentType<any>> = {
   Footer,
 };
 
-interface Props {
-  id: string;
+export function NodeFrame({ selected, children, onClick }: NodeFrameProps) {
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "relative rounded-md border border-transparent mx-2 p-2 transition",
+        "hover:bg-muted/50",
+        selected && "ring-1  ring-primary",
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function NodeRenderer({ id }: Props) {

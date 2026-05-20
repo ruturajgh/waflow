@@ -25,7 +25,6 @@ export const Root = (props: any) => {
           padding: "13px",
         }}
       >
-        Root layer for whatsapp flows
         {props.children}
       </div>
     </FlowEditorContext.Provider>
