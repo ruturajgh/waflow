@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { Text } from "lucide-react";
 import { BooleanAtom } from "./atoms/Boolean";
 import { InputAtom } from "./atoms/Input";
@@ -17,8 +16,6 @@ export function Footer({ node, onUpdate }: any) {
           <Text /> {node.type + " " + node.props.label}
         </AccordionTrigger>
         <AccordionContent>
-          <FooterPreview props={node.props} />
-
           <InputAtom
             label="Button Label"
             value={node.props.label}
@@ -57,21 +54,5 @@ export function Footer({ node, onUpdate }: any) {
         </AccordionContent>
       </AccordionItem>
     </Accordion>
-  );
-}
-
-function FooterPreview({ props }) {
-  return (
-    <div className="space-y-3">
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span>{props["left-caption"]}</span>
-        <span>{props["center-caption"]}</span>
-        <span>{props["right-caption"]}</span>
-      </div>
-
-      <Button disabled={!props.enabled} className="w-full">
-        {props.label}
-      </Button>
-    </div>
   );
 }

@@ -11,7 +11,7 @@ export function FormNodeRenderer({ node, onUpdate }: any) {
       <div className="flex items-center gap-1">
         <FormIcon />
         <EditableText
-          value={node.props.name}
+          value={node.props.name.value}
           onChange={(v) => onUpdate?.(node.id, { name: v })}
           className="font-medium text-sm"
         />

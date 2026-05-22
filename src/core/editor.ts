@@ -119,14 +119,14 @@ export class Editor {
 
     const bindings = this.collectInsideForms(
       screenNode?.childrenIds || [],
-      false
+      false,
     );
-    return bindings.map(i => ({ label: i, value: i }))
+    return bindings.map((i) => ({ label: i, value: i }));
   };
 
   private collectInsideForms = (
     childrenIds: string[],
-    insideForm: boolean
+    insideForm: boolean,
   ): string[] => {
     const result: string[] = [];
 
@@ -135,23 +135,16 @@ export class Editor {
 
       if (!child) continue;
 
-      const isInsideForm =
-        insideForm || child.kind === "form";
+      const isInsideForm = insideForm || child.kind === "form";
 
       // collect ONLY children inside forms
-      if (
-        insideForm &&
-        "name" in (child.props || {})
-      ) {
+      if (insideForm && "name" in (child.props || {})) {
         result.push(child.props.name);
       }
 
       if (child.childrenIds?.length) {
         result.push(
-          ...this.collectInsideForms(
-            child.childrenIds,
-            isInsideForm
-          )
+          ...this.collectInsideForms(child.childrenIds, isInsideForm),
         );
       }
     }

@@ -1,14 +1,9 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import runtimeSchema from "@/core/schema/runtimeSchema";
 import { Text } from "lucide-react";
+import { Binder } from "./atoms/Binder";
 import { BooleanAtom } from "./atoms/Boolean";
 import { SelectAtom } from "./atoms/Select";
 import { EditableText } from "./atoms/Text";
+import { NodeFrame } from "./registry";
 
 type TextBodySchema = {
   text: string;
@@ -25,56 +20,89 @@ type TextBodyProps = {
   onUpdate?: (id: string, props: Partial<TextBodySchema>) => void;
 };
 
-const fontWeightMap = {
-  normal: "font-normal",
-  medium: "font-medium",
-  semibold: "font-semibold",
-  bold: "font-bold",
-};
+export function TextBody({
+  node,
+  selected,
+  onSelect,
+  onUpdate,
+}: TextBodyProps) {
 
-export function TextBody({ node, onUpdate }: TextBodyProps) {
-  const fontWeightOptions =
-    runtimeSchema[node.type].properties["font-weight"].enum;
+  const fontWeightOptions = node.spec.properties["font-weight"].enum;
+
+  const textRules = node.spec.properties.text;
 
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <AccordionTrigger className=" items-center gap-2">
-          <Text /> {node.type + " " + node.props.text}
-        </AccordionTrigger>
-        <AccordionContent>
-          {/* Preview */}
-          <EditableText
-            value={node.props.text}
-            onChange={(v) => onUpdate?.(node.id, { text: v })}
-            fontClassName={fontWeightMap[node.props["font-weight"]]}
-            strikethrough={node.props.strikethrough}
-          />
+    <NodeFrame
+      node={node}
+      label={
+        <span className="flex items-center gap-2">
+          <Text />
+          {node.type}: {node.props.text?.value}
+        </span>
+      }
+      selected={selected}
+      onClick={() => onSelect?.(node.id)}
+    >
+      <EditableText
+        value={node.props.text.value}
+        minLength={textRules.minLength}
+        maxLength={textRules.maxLength}
+        className="text-xl font-bold"
+        onChange={(value) => onUpdate?.(node.id, { text: value })}
+      />
 
-          {/* Visible */}
-
+      <Binder
+        property={node.props.text}
+        onUpdate={(value) => onUpdate?.(node.id, { text: value })}
+      />
+      {node.props?.visible && (
+        <>
           <BooleanAtom
             label="Visible"
-            value={node.props.visible}
+            value={node.props.visible.value}
             onChange={(v) => onUpdate?.(node.id, { visible: v })}
           />
 
+          <Binder
+            property={node.props.visible}
+            onUpdate={(value) => onUpdate?.(node.id, { visible: value })}
+          />
+        </>
+      )}
+      {node.props?.strikethrough && (
+        <>
           {/* Strikethrough */}
           <BooleanAtom
             label="Strikethrough"
-            value={node.props.strikethrough}
+            value={node.props.strikethrough.value}
             onChange={(v) => onUpdate?.(node.id, { strikethrough: v })}
           />
 
+          <Binder
+            property={node.props.strikethrough}
+            onUpdate={(value) => onUpdate?.(node.id, { strikethrough: value })}
+          />
+        </>
+      )}
+
+      {node.props?.["font-weight"] && (
+        <>
           {/* Font Weight */}
           <SelectAtom
             label="Font Weight"
-            value={node.props["font-weight"]}
+            value={node.props["font-weight"].value}
             options={fontWeightOptions}
             onChange={(v) => onUpdate?.(node.id, { "font-weight": v })}
           />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+
+          <Binder
+            property={node.props["font-weight"]}
+            onUpdate={(value) =>
+              onUpdate?.(node.id, { ["font-weight"]: value })
+            }
+          />
+        </>
+      )}
+    </NodeFrame>
   );
 }

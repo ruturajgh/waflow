@@ -42,29 +42,17 @@ export type Node = {
     createdAt?: number;
   };
 };
+export interface RuntimeProp {
+  kind: "static" | "binding";
+  value: any;
 
-type StaticProp<T = any> = {
-  kind: "static";
-  value: T;
-};
-
-type BindingProp = {
-  kind: "binding";
-
-  value: string | Array<any> | Boolean | number;
-
-  source: "data" | "form";
-
-  path: string;
-
-  valueType?: string | null;
-
+  // binding-only fields
+  source?: string;
+  path?: string;
+  valueType?: string;
   valid: boolean;
-
   errors: string[];
-};
-
-export type RuntimeProp<T = any> = StaticProp<T> | BindingProp;
+}
 
 const DynamicBindingRegExp = /^\$\{([a-zA-Z0-9_]+)\.([a-zA-Z0-9_.]+)\}$/;
 
@@ -119,9 +107,17 @@ export function normalizeProp(
 ): RuntimeProp {
   const bindable = isBindable(propertySchema);
 
-  // ALWAYS normalize into adapters
+  // Default static shape
+  const base: RuntimeProp = {
+    kind: "static",
+    value,
+    valid: true,
+    errors: [],
+  };
+
+  // Non-bindable → always static object
   if (!bindable) {
-    return value;
+    return base;
   }
 
   // Dynamic binding
@@ -141,9 +137,7 @@ export function normalizeProp(
       value: resolveDynamicDatatoValue(binding.path, dynamicData),
 
       source: binding.source,
-
       path: binding.path,
-
       valueType: resolvedType,
 
       valid,
@@ -154,11 +148,8 @@ export function normalizeProp(
     };
   }
 
-  // Static bindable prop
-  return {
-    kind: "static",
-    value,
-  };
+  // Bindable but static
+  return base;
 }
 
 export function createRuntimeProps(
@@ -168,19 +159,31 @@ export function createRuntimeProps(
 ) {
   const properties = schema.properties ?? {};
 
+  const required = new Set(schema.required ?? []);
+
   const props: Record<string, RuntimeProp> = {};
 
   for (const key of Object.keys(properties)) {
     const propertySchema = properties[key];
 
-    const value =
-      input[key] !== undefined ? input[key] : propertySchema.default;
+    const hasInput = input[key] !== undefined;
+
+    const isRequired = required.has(key);
+
+    // Skip optional + missing
+    if (!hasInput && !isRequired) {
+      continue;
+    }
+
+    // Input wins
+    const value = hasInput ? input[key] : propertySchema.default;
 
     props[key] = normalizeProp(value, propertySchema, contextSchema);
   }
 
   return props;
 }
+
 export const createNode = (
   type: string,
   input: Record<string, any>,

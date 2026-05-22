@@ -1,8 +1,8 @@
 import { Text } from "lucide-react";
+import { Binder } from "./atoms/Binder";
 import { BooleanAtom } from "./atoms/Boolean";
 import { EditableText } from "./atoms/Text";
 import { NodeFrame } from "./registry";
-import { Binder } from "./atoms/Binder";
 
 interface TextHeadingNode {
   id: string;
@@ -28,14 +28,15 @@ export function TextHeading({
   onSelect,
   onUpdate,
 }: TextHeadingProps) {
-  console.log(node.props)
-  const textRules = node.spec.properties.text;
+  const textRules = node.spec.properties.text; 
+  console.log(node)
   return (
     <NodeFrame
+      node={node}
       label={
         <span className="flex items-center gap-2">
           <Text />
-          {node.type}: {node.props.text.value}
+          {node.type}: {node.props.text?.value}
         </span>
       }
       selected={selected}
@@ -54,16 +55,17 @@ export function TextHeading({
         onUpdate={(value) => onUpdate?.(node.id, { text: value })}
       />
 
-      <BooleanAtom
-        label="Visible"
-        value={node.props.visible.value}
-        onChange={(v) => onUpdate?.(node.id, { visible: v})}
-      />
+      {node.props?.visible && <>
+        <BooleanAtom
+          label="Visible"
+          value={node.props.visible.value}
+          onChange={(v) => onUpdate?.(node.id, { visible: v })}
+        />
 
-      <Binder
-        property={node.props.visible}
-        onUpdate={(value) => onUpdate?.(node.id, { visible: value })}
-      />
+        <Binder
+          property={node.props.visible}
+          onUpdate={(value) => onUpdate?.(node.id, { visible: value })}
+        /></>}
     </NodeFrame>
   );
 }

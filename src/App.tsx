@@ -37,6 +37,10 @@ function App() {
               },
             ],
           },
+          headings: {
+            type: "string",
+            __example__: "Your content",
+          },
         },
         layout: {
           type: "SingleColumnLayout",
@@ -47,7 +51,7 @@ function App() {
               children: [
                 {
                   type: "TextHeading",
-                  text: "This is a heading",
+                  text: "${data.headings}",
                   visible: true,
                 },
                 {
