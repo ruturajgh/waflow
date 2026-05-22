@@ -79,7 +79,7 @@ function App() {
     <FlowEditor.Root flowData={data}>
       <FlowEditor.Section direction="row">
         <FlowEditor.Section>
-          <FlowEditor.Screens></FlowEditor.Screens>
+          {/* <FlowEditor.Screens></FlowEditor.Screens> */}
           <FlowEditor.Nodes></FlowEditor.Nodes>
         </FlowEditor.Section>
 

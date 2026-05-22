@@ -32,7 +32,7 @@ export class Editor {
     const state = this.initEditor(flowData);
     state.validate = resolveVersion(runtimeSchema, [], 5.1);
     state.errors = new Map();
-
+    
     this.txManager = new TransactionManager(state);
 
     const flowNode = [...state.nodes.values()].find(

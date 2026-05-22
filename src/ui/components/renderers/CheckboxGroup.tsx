@@ -88,8 +88,8 @@ function toBase64(file: File): Promise<string> {
     });
 }
 
-export function CheckboxDataSourceEditor({ node, onUpdate }: any) {
-    console.log(node)
+export function CheckboxDataSourceEditor({ node, onUpdate }: any) { 
+  
     const items: DataSourceItem[] = node.props["data-source"] || [];
 
     const updateItem = (index: number, patch: Partial<DataSourceItem>) => {

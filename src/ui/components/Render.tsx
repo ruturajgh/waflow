@@ -36,8 +36,7 @@ export function NodeRenderer({ id }: Props) {
 
   if (!node) {
     return null;
-  }
-
+  } 
   const Renderer = componentRegistry[node.type];
 
   if (!Renderer) {
