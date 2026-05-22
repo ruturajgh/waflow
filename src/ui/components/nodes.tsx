@@ -50,7 +50,7 @@ function NodeList({ screenLayoutId }: any) {
   );
 
   const componentIds = layout?.childrenIds || [];
- 
+
   return (
     <TabsContent value="Nodes" className="">
       {componentIds.map((id: string) => (

@@ -410,10 +410,14 @@ export default {
           required: ["id", "title", "enabled"],
 
           properties: {
-            id: { type: "string", minLength: 1, default:'item-1' },
-            title: { type: "string", minLength: 1, default:'Item 1'  },
-            description: { type: "string", minLength: 1, default:'Description-1'},
-            metadata: { type: "string", minLength: 1, default:'item-1'},
+            id: { type: "string", minLength: 1, default: "item-1" },
+            title: { type: "string", minLength: 1, default: "Item 1" },
+            description: {
+              type: "string",
+              minLength: 1,
+              default: "Description-1",
+            },
+            metadata: { type: "string", minLength: 1, default: "item-1" },
             enabled: { type: "boolean", default: true },
 
             // v5+

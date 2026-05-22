@@ -1,12 +1,8 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Text } from "lucide-react";
 import { BooleanAtom } from "./atoms/Boolean";
 import { EditableText } from "./atoms/Text";
-import { Text } from "lucide-react";
+import { NodeFrame } from "./registry";
+import { Binder } from "./atoms/Binder";
 
 interface TextHeadingNode {
   id: string;
@@ -26,30 +22,48 @@ interface TextHeadingProps {
   onUpdate?: (id: string, updates: Partial<TextHeadingNode["props"]>) => void;
 }
 
-export function TextHeading({ node, onUpdate }: TextHeadingProps) {
-  if (node.props.visible === false) {
-    return null;
-  }
+export function TextHeading({
+  node,
+  selected,
+  onSelect,
+  onUpdate,
+}: TextHeadingProps) {
+  console.log(node.props)
+  const textRules = node.spec.properties.text;
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <AccordionTrigger className=" items-center gap-2">
-          <Text /> {node.type + " " + node.props.text}
-        </AccordionTrigger>
-        <AccordionContent>
-          <EditableText
-            value={node.props.text}
-            onChange={(v) => onUpdate?.(node.id, { text: v })}
-            className="text-3xl font-bold outline-none"
-          />
-          {/* Settings */}
-          <BooleanAtom
-            label="Visible"
-            value={node.props.visible}
-            onChange={(v) => onUpdate?.(node.id, { visible: v })}
-          />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <NodeFrame
+      label={
+        <span className="flex items-center gap-2">
+          <Text />
+          {node.type}: {node.props.text.value}
+        </span>
+      }
+      selected={selected}
+      onClick={() => onSelect?.(node.id)}
+    >
+      <EditableText
+        value={node.props.text.value}
+        minLength={textRules.minLength}
+        maxLength={textRules.maxLength}
+        className="text-3xl font-bold"
+        onChange={(value) => onUpdate?.(node.id, { text: value })}
+      />
+
+      <Binder
+        property={node.props.text}
+        onUpdate={(value) => onUpdate?.(node.id, { text: value })}
+      />
+
+      <BooleanAtom
+        label="Visible"
+        value={node.props.visible.value}
+        onChange={(v) => onUpdate?.(node.id, { visible: v})}
+      />
+
+      <Binder
+        property={node.props.visible}
+        onUpdate={(value) => onUpdate?.(node.id, { visible: value })}
+      />
+    </NodeFrame>
   );
 }

@@ -32,7 +32,7 @@ export class Editor {
     const state = this.initEditor(flowData);
     state.validate = resolveVersion(runtimeSchema, [], 5.1);
     state.errors = new Map();
-    
+
     this.txManager = new TransactionManager(state);
 
     const flowNode = [...state.nodes.values()].find(
@@ -111,6 +111,53 @@ export class Editor {
     this.emit();
   };
 
+  resolveAllFormBindings = () => {
+    const activeScreen = this.selectedScreen;
+    if (!activeScreen) return [];
+
+    const screenNode = this.state.nodes.get(activeScreen);
+
+    const bindings = this.collectInsideForms(
+      screenNode?.childrenIds || [],
+      false
+    );
+    return bindings.map(i => ({ label: i, value: i }))
+  };
+
+  private collectInsideForms = (
+    childrenIds: string[],
+    insideForm: boolean
+  ): string[] => {
+    const result: string[] = [];
+
+    for (const childId of childrenIds) {
+      const child = this.state.nodes.get(childId);
+
+      if (!child) continue;
+
+      const isInsideForm =
+        insideForm || child.kind === "form";
+
+      // collect ONLY children inside forms
+      if (
+        insideForm &&
+        "name" in (child.props || {})
+      ) {
+        result.push(child.props.name);
+      }
+
+      if (child.childrenIds?.length) {
+        result.push(
+          ...this.collectInsideForms(
+            child.childrenIds,
+            isInsideForm
+          )
+        );
+      }
+    }
+
+    return result;
+  };
   emit = () => {
     for (const listener of this.listeners) {
       listener();

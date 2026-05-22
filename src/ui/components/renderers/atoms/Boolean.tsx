@@ -5,7 +5,7 @@ export function BooleanAtom({ value, label, onChange }) {
   return (
     <div className=" flex flex-row gap-2  w-min">
       <Input
-        checked={value}
+        defaultChecked={value}
         type="checkbox"
         onChange={(e) => onChange(e.target.checked)}
       />

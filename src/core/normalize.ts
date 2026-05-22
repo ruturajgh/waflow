@@ -6,6 +6,9 @@ import { createNode, type Node } from "./node";
  * Builders
  * -----------------------------
  */
+
+export const dynamicData = new Map<string, any>();
+
 function buildComponent(
   child: any,
   parentId: string,
@@ -38,11 +41,16 @@ function buildScreen(screen: any, parentId: string, nodes: Map<string, Node>) {
  * ROOT FLOW BUILDER
  * -----------------------------
  */
-function buildFlow(input: any, nodes: Map<string, Node>) {
+function buildFlow(
+  input: any,
+  nodes: Map<string, Node>,
+  data: Map<string, any>,
+) {
   const flow = createNode("flow", input, undefined);
   nodes.set(flow.id, flow);
 
   for (const screen of input.screens || []) {
+    Object.keys(screen.data).map((key) => data.set(key, screen.data[key]));
     const screenNode = buildScreen(screen, flow.id, nodes);
     flow.childrenIds.push(screenNode.id);
   }
@@ -66,7 +74,7 @@ export function normalize(input: any): EditorState {
 
   const nodes = new Map<string, Node>();
 
-  const root = buildFlow(input, nodes);
+  const root = buildFlow(input, nodes, dynamicData);
 
   return {
     rootId: root.id,

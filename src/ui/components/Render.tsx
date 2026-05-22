@@ -1,30 +1,9 @@
 import { useFlowEditor } from "@/ui/hooks/useFlowEditor";
 import { useSubscribe } from "@/ui/hooks/useSubscribe";
-import { cn } from "@/lib/utils";
 import { componentRegistry } from "./renderers/registry";
 
 interface Props {
   id: string;
-}
-type NodeFrameProps = {
-  selected?: boolean;
-  children: React.ReactNode;
-  onClick?: () => void;
-};
-
-export function NodeFrame({ selected, children, onClick }: NodeFrameProps) {
-  return (
-    <div
-      onClick={onClick}
-      className={cn(
-        "relative rounded-md border border-transparent mx-2 p-2  transition",
-        "hover:bg-muted/50",
-        selected && "ring-1  ring-primary",
-      )}
-    >
-      {children}
-    </div>
-  );
 }
 
 export function NodeRenderer({ id }: Props) {
@@ -36,7 +15,7 @@ export function NodeRenderer({ id }: Props) {
 
   if (!node) {
     return null;
-  } 
+  }
   const Renderer = componentRegistry[node.type];
 
   if (!Renderer) {
@@ -47,11 +26,11 @@ export function NodeRenderer({ id }: Props) {
     );
   }
   return (
-    <NodeFrame
+    <Renderer
+      node={node}
       selected={selectedComponent === node.id}
-      onClick={() => editor.selectComponent(node.id)}
-    >
-      <Renderer node={node} editor={editor} onUpdate={editor.updateNodeProps} />
-    </NodeFrame>
+      onSelect={() => editor.selectComponent(node.id)}
+      onUpdate={editor.updateNodeProps}
+    />
   );
 }

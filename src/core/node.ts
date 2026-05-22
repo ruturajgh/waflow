@@ -1,6 +1,6 @@
+import { dynamicData } from "./normalize";
 import runtimeSchema from "./schema/runtimeSchema";
 import { generateId } from "./utils";
-
 
 export type NodeKind = "flow" | "screen" | "layout" | "component";
 
@@ -25,7 +25,7 @@ export type Node = {
 
   childrenIds: string[];
 
-  spec?: any,
+  spec?: any;
   /**
    * Instantiated runtime props
    */
@@ -51,11 +51,11 @@ type StaticProp<T = any> = {
 type BindingProp = {
   kind: "binding";
 
-  raw: string;
+  value: string | Array<any> | Boolean | number;
 
   source: "data" | "form";
 
-  path: string[];
+  path: string;
 
   valueType?: string | null;
 
@@ -64,25 +64,17 @@ type BindingProp = {
   errors: string[];
 };
 
-export type RuntimeProp<T = any> =
-  | StaticProp<T>
-  | BindingProp;
+export type RuntimeProp<T = any> = StaticProp<T> | BindingProp;
 
-const DynamicBindingRegExp =
-  /^\$\{([a-zA-Z0-9_]+)\.([a-zA-Z0-9_.]+)\}$/;
+const DynamicBindingRegExp = /^\$\{([a-zA-Z0-9_]+)\.([a-zA-Z0-9_.]+)\}$/;
 
-export const isDynamic = (value: string) =>
-  DynamicBindingRegExp.test(value);
+export const isDynamic = (value: string) => DynamicBindingRegExp.test(value);
 
 export function parseDynamicBinding(value: string) {
-  const match = value.match(
-    DynamicBindingRegExp,
-  );
+  const match = value.match(DynamicBindingRegExp);
 
   if (!match) {
-    throw new Error(
-      "Invalid dynamic binding",
-    );
+    throw new Error("Invalid dynamic binding");
   }
 
   const [, source, path] = match;
@@ -90,18 +82,12 @@ export function parseDynamicBinding(value: string) {
   return {
     source: source as "data" | "form",
 
-    path: path.split("."),
+    path: path,
   };
 }
 
-
-const isBindable = (
-  property: Record<string, any>,
-) => {
-  return (
-    property?.["x-binding"]?.allowed ===
-    true
-  );
+const isBindable = (property: Record<string, any>) => {
+  return property?.["x-binding"]?.allowed === true;
 };
 
 function resolveBindingType(
@@ -111,17 +97,19 @@ function resolveBindingType(
   },
   contextSchema: any,
 ): string | null {
-  let current =
-    contextSchema?.[binding.source];
+  let current = contextSchema?.[binding.source];
 
   for (const segment of binding.path) {
     if (!current) return null;
 
-    current =
-      current.properties?.[segment];
+    current = current.properties?.[segment];
   }
 
   return current?.type ?? null;
+}
+
+function resolveDynamicDatatoValue(path, data) {
+  return data.get(path).__example__;
 }
 
 export function normalizeProp(
@@ -129,45 +117,28 @@ export function normalizeProp(
   propertySchema: any,
   contextSchema: any,
 ): RuntimeProp {
-  const bindable =
-    isBindable(propertySchema);
+  const bindable = isBindable(propertySchema);
 
   // ALWAYS normalize into adapters
   if (!bindable) {
-    return {
-      kind: "static",
-      value,
-    };
+    return value;
   }
 
   // Dynamic binding
-  if (
-    typeof value === "string" &&
-    isDynamic(value)
-  ) {
-    const binding =
-      parseDynamicBinding(value);
+  if (typeof value === "string" && isDynamic(value)) {
+    const binding = parseDynamicBinding(value);
 
-    const acceptedTypes =
-      propertySchema?.["x-binding"]
-        ?.acceptedTypes ?? [];
+    const acceptedTypes = propertySchema?.["x-binding"]?.acceptedTypes ?? [];
 
-    const resolvedType =
-      resolveBindingType(
-        binding,
-        contextSchema,
-      );
+    const resolvedType = resolveBindingType(binding, contextSchema);
 
     const valid =
-      acceptedTypes.length === 0 ||
-      acceptedTypes.includes(
-        resolvedType ?? "",
-      );
+      acceptedTypes.length === 0 || acceptedTypes.includes(resolvedType ?? "");
 
     return {
       kind: "binding",
 
-      raw: value,
+      value: resolveDynamicDatatoValue(binding.path, dynamicData),
 
       source: binding.source,
 
@@ -179,9 +150,7 @@ export function normalizeProp(
 
       errors: valid
         ? []
-        : [
-          `Expected ${acceptedTypes.join(", ")} but got ${resolvedType}`,
-        ],
+        : [`Expected ${acceptedTypes.join(", ")} but got ${resolvedType}`],
     };
   }
 
@@ -197,26 +166,17 @@ export function createRuntimeProps(
   input: Record<string, any>,
   contextSchema: any,
 ) {
-  const properties =
-    schema.properties ?? {};
+  const properties = schema.properties ?? {};
 
-  const props: Record<string, RuntimeProp> =
-    {};
+  const props: Record<string, RuntimeProp> = {};
 
   for (const key of Object.keys(properties)) {
-    const propertySchema =
-      properties[key];
+    const propertySchema = properties[key];
 
     const value =
-      input[key] !== undefined
-        ? input[key]
-        : propertySchema.default;
+      input[key] !== undefined ? input[key] : propertySchema.default;
 
-    props[key] = normalizeProp(
-      value,
-      propertySchema,
-      contextSchema,
-    );
+    props[key] = normalizeProp(value, propertySchema, contextSchema);
   }
 
   return props;
@@ -229,11 +189,7 @@ export const createNode = (
 ): Node => {
   const schema = runtimeSchema[type];
 
-  const props = createRuntimeProps(
-    schema,
-    input,
-    contextSchema,
-  );
+  const props = createRuntimeProps(schema, input, contextSchema);
 
   return {
     id: generateId(schema["x-kind"]),
