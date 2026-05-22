@@ -61,6 +61,7 @@ function NodeList({ screenLayoutId }: any) {
 }
 
 const ScreenProperties = ({ data, setData }) => {
+
   return (
     <TabsContent value="Properties" className="  flex flex-col mx-2 ">
       <EditableText
@@ -69,12 +70,12 @@ const ScreenProperties = ({ data, setData }) => {
             title: value,
           })
         }
-        value={data.props.title}
+        value={data.props.title.value}
       />
 
       <BooleanAtom
         label={"Terminal"}
-        value={data.props.terminal}
+        value={data.props.terminal.value}
         onChange={(checked) =>
           setData(data.id, {
             terminal: checked,
@@ -84,7 +85,7 @@ const ScreenProperties = ({ data, setData }) => {
 
       <BooleanAtom
         label={"Success"}
-        value={data.props.success}
+        value={data.props?.success?.value}
         onChange={(checked) =>
           setData(data.id, {
             success: checked,
@@ -94,7 +95,7 @@ const ScreenProperties = ({ data, setData }) => {
 
       <BooleanAtom
         label={"Refresh On Back"}
-        value={data.props.refresh_on_back}
+        value={data.props?.refresh_on_back?.value}
         onChange={(checked) =>
           setData(data.id, {
             refresh_on_back: checked,

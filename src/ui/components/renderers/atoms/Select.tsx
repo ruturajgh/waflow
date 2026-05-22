@@ -22,35 +22,30 @@ type Props = {
 
   onChange?: (value: string) => void;
 
+  placeholder?: string;
+
   options: Option[];
 };
 
 export function SelectAtom({
   label,
+  placeholder,
   value,
   onChange,
   options,
 }: Props) {
   return (
     <div className="space-y-2">
-      {label && (
-        <Label>{label}</Label>
-      )}
+      {label && <Label>{label}</Label>}
 
-      <Select
-        value={value}
-        onValueChange={onChange}
-      >
+      <Select value={value} onValueChange={onChange}>
         <SelectTrigger>
-          <SelectValue placeholder="" />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
         <SelectContent>
           {options.map((option) => (
-            <SelectItem
-              key={option.value}
-              value={option.value}
-            >
+            <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
           ))}

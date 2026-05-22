@@ -26,7 +26,6 @@ export function TextBody({
   onSelect,
   onUpdate,
 }: TextBodyProps) {
-
   const fontWeightOptions = node.spec.properties["font-weight"].enum;
 
   const textRules = node.spec.properties.text;

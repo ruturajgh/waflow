@@ -4,16 +4,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { Option } from "lucide-react";
 import { FormNodeRenderer } from "./Form";
 import { TextBody } from "./TextBody";
 import { TextCaption } from "./TextCaption";
 import { TextHeading } from "./TextHeading";
 import { TextSubheading } from "./TextSubheading";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Option } from "lucide-react";
-
+import { PropertyTable } from "../PropertyTable";
 
 export const componentRegistry: Record<string, React.ComponentType<any>> = {
   Form: FormNodeRenderer,
@@ -27,7 +32,7 @@ export const componentRegistry: Record<string, React.ComponentType<any>> = {
 
 type NodeFrameProps = {
   selected?: boolean;
-  node: any,
+  node: any;
   label: React.ReactNode;
   children: React.ReactNode;
   onClick?: () => void;
@@ -58,11 +63,13 @@ export function NodeFrame({
         <AccordionContent className="mx-3 h-full">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline"><Option /></Button>
+              <Button variant="outline">
+                <Option />
+              </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuGroup>
-
+            <DropdownMenuContent className="w-full">
+              <DropdownMenuGroup className="m-2">
+                <PropertyTable node={node} />
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>

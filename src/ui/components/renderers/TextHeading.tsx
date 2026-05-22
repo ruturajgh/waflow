@@ -28,8 +28,8 @@ export function TextHeading({
   onSelect,
   onUpdate,
 }: TextHeadingProps) {
-  const textRules = node.spec.properties.text; 
-  console.log(node)
+  const textRules = node.spec.properties.text;
+  console.log(node);
   return (
     <NodeFrame
       node={node}
@@ -55,17 +55,20 @@ export function TextHeading({
         onUpdate={(value) => onUpdate?.(node.id, { text: value })}
       />
 
-      {node.props?.visible && <>
-        <BooleanAtom
-          label="Visible"
-          value={node.props.visible.value}
-          onChange={(v) => onUpdate?.(node.id, { visible: v })}
-        />
+      {node.props?.visible && (
+        <>
+          <BooleanAtom
+            label="Visible"
+            value={node.props.visible.value}
+            onChange={(v) => onUpdate?.(node.id, { visible: v })}
+          />
 
-        <Binder
-          property={node.props.visible}
-          onUpdate={(value) => onUpdate?.(node.id, { visible: value })}
-        /></>}
+          <Binder
+            property={node.props.visible}
+            onUpdate={(value) => onUpdate?.(node.id, { visible: value })}
+          />
+        </>
+      )}
     </NodeFrame>
   );
 }

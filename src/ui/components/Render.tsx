@@ -31,6 +31,6 @@ export function NodeRenderer({ id }: Props) {
       selected={selectedComponent === node.id}
       onSelect={() => editor.selectComponent(node.id)}
       onUpdate={editor.updateNodeProps}
-    /> 
+    />
   );
 }
