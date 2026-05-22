@@ -44,29 +44,46 @@ function App() {
             {
               type: "Form",
               name: "checkbox_example_form",
-              children: [
-                {
-                  type: "CheckboxGroup",
-                  name: "extras",
-                  label: "Extras:",
-                  description: "Pick something to go with your meal",
-                  required: true,
-                  "data-source": "${data.all_extras}",
-                  "on-select-action": {
-                    name: "data_exchange",
-                    payload: {
-                      extras: "${form.extras}",
-                    },
+              children: [{
+                "type": "TextHeading",
+                "text": "This is a heading",
+                "visible": true
+              },
+              {
+                "type": "TextSubheading",
+                "text": "This is a subheading",
+                "visible": true
+              },
+              {
+                "type": "TextBody",
+                "text": "This is body text"
+              },
+              {
+                "type": "TextCaption",
+                "text": "This is a text caption"
+              },
+              {
+                type: "CheckboxGroup",
+                name: "extras",
+                label: "Extras:",
+                description: "Pick something to go with your meal",
+                required: true,
+                "data-source": "${data.all_extras}",
+                "on-select-action": {
+                  name: "data_exchange",
+                  payload: {
+                    extras: "${form.extras}",
                   },
                 },
-                {
-                  type: "Footer",
-                  label: "Continue",
-                  "on-click-action": {
-                    name: "data_exchange",
-                    payload: {},
-                  },
+              },
+              {
+                type: "Footer",
+                label: "Continue",
+                "on-click-action": {
+                  name: "data_exchange",
+                  payload: {},
                 },
+              },
               ],
             },
           ],
@@ -75,11 +92,12 @@ function App() {
     ],
   });
 
+  console.log(data.txManager.getState())
   return (
     <FlowEditor.Root flowData={data}>
       <FlowEditor.Section direction="row">
         <FlowEditor.Section>
-          {/* <FlowEditor.Screens></FlowEditor.Screens> */}
+          <FlowEditor.Screens></FlowEditor.Screens>
           <FlowEditor.Nodes></FlowEditor.Nodes>
         </FlowEditor.Section>
 
