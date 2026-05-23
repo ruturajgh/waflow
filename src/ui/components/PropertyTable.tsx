@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { SelectAtom } from "./renderers/atoms/Select";
+import { useFlowEditor } from "../hooks/useFlowEditor";
 
 export function createPropertyTable(node: any) {
   const specProperties = node.spec.properties ?? {};
@@ -42,6 +43,8 @@ export function createPropertyTable(node: any) {
 export function PropertyTable({ node }) {
   const [rows, setRows] = useState(() => createPropertyTable(node));
 
+  const createNode = useFlowEditor().createNodeFromPropertyData;
+
   function updateRow(property: string, patch: Partial<any>) {
     setRows((prev) =>
       prev.map((row) =>
@@ -63,11 +66,14 @@ export function PropertyTable({ node }) {
           row.property,
           {
             kind: row.kind,
+            source: row.source,
+            path: row.path,
             value: row.value,
           },
         ]),
     );
-    console.log(result);
+
+    createNode(result, node.id);
   }
   return (
     <div>
@@ -116,6 +122,28 @@ export function PropertyTable({ node }) {
               </div>
             ) : (
               <span>-</span>
+            )}
+
+            {/* kind */}
+            {row.kind !== "static" && row.source && (
+              <div className="w-[100px]">
+                <SelectAtom
+                  value={row.source}
+                  options={[
+                    {
+                      label: "Data",
+                      value: "data",
+                    },
+                    {
+                      label: "Form",
+                      value: "form",
+                    },
+                  ]}
+                  onChange={(value) =>
+                    updateRow(row.property, { source: value })
+                  }
+                />
+              </div>
             )}
 
             {/* path */}

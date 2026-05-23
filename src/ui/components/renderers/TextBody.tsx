@@ -1,4 +1,4 @@
-import { Text } from "lucide-react";
+import { ConciergeBell, Text } from "lucide-react";
 import { Binder } from "./atoms/Binder";
 import { BooleanAtom } from "./atoms/Boolean";
 import { SelectAtom } from "./atoms/Select";
@@ -26,7 +26,11 @@ export function TextBody({
   onSelect,
   onUpdate,
 }: TextBodyProps) {
-  const fontWeightOptions = node.spec.properties["font-weight"].enum;
+  const fontWeightOptions =
+    node.spec.properties["font-weight"].enum.map((i) => ({
+      label: i,
+      value: i,
+    })) || [];
 
   const textRules = node.spec.properties.text;
 

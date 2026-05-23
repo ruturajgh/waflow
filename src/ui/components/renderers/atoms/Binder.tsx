@@ -22,7 +22,6 @@ export function Binder({ property, onUpdate }) {
 
   return (
     <div className="space-y-2">
-
       {isDynamic && (
         <div className="space-y-2 ">
           <div className="flex gap-2">
@@ -36,9 +35,12 @@ export function Binder({ property, onUpdate }) {
                 })
               }
               options={sourceOptions}
-            /></div>
+            />
+          </div>
           {property?.source === "data" ? (
-            <div className="flex gap-2"> <Label>Path</Label>
+            <div className="flex gap-2">
+              {" "}
+              <Label>Path</Label>
               <Input
                 defaultValue={property?.path || ""}
                 onBlur={(e) =>
@@ -47,14 +49,15 @@ export function Binder({ property, onUpdate }) {
                     path: e.target.value,
                   })
                 }
-              /></div>
+              />
+            </div>
           ) : (
             <div className="flex gap-2">
               {" "}
               <Label>Path</Label>{" "}
               <SelectAtom
                 value={property.path}
-                onChange={(e) => { }}
+                onChange={(e) => {}}
                 options={pathOptions}
               />
             </div>

@@ -61,7 +61,6 @@ function NodeList({ screenLayoutId }: any) {
 }
 
 const ScreenProperties = ({ data, setData }) => {
-
   return (
     <TabsContent value="Properties" className="  flex flex-col mx-2 ">
       <EditableText

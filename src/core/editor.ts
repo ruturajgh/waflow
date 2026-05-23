@@ -1,4 +1,4 @@
-import type { Node } from "./node";
+import { createNodeFormRuntimeNode, type Node } from "./node";
 import { normalize } from "./normalize";
 import runtimeSchema from "./schema/runtimeSchema";
 import { TransactionManager } from "./transactionManager";
@@ -151,6 +151,22 @@ export class Editor {
 
     return result;
   };
+
+  createNodeFromPropertyData = (input, nodeId) => {
+    const node = this.state.nodes.get(nodeId);
+    if (!node) return null;
+    const newNodeProps = createNodeFormRuntimeNode(input, node);
+    node.props = newNodeProps;
+
+    let newNode = {} as any;
+
+    newNode = { ...node, props: newNodeProps };
+
+    this.state.nodes.set(newNode.id, newNode);
+
+    this.emit();
+  };
+
   emit = () => {
     for (const listener of this.listeners) {
       listener();

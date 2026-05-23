@@ -191,6 +191,7 @@ export default {
 
         "x-binding": {
           allowed: true,
+          acceptedTypes: ["string"],
         },
       },
 
@@ -200,6 +201,7 @@ export default {
 
         "x-binding": {
           allowed: true,
+          acceptedTypes: ["boolean"],
         },
       },
     },
@@ -227,6 +229,7 @@ export default {
 
         "x-binding": {
           allowed: true,
+          acceptedTypes: ["string"],
         },
       },
 
@@ -236,6 +239,7 @@ export default {
 
         "x-binding": {
           allowed: true,
+          acceptedTypes: ["boolean"],
         },
       },
     },

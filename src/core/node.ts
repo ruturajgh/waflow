@@ -215,3 +215,37 @@ export const createNode = (
     },
   };
 };
+
+export const createNodeFormRuntimeNode = (
+  input: Record<string, any>,
+  node: Record<string, any>,
+) => {
+  const schema = node.spec;
+  const props = {} as any;
+
+  Object.entries(input).map(([key, value]) => {
+    const bindingSchema = schema.properties[key]["x-binding"];
+
+    const acceptedTypes = bindingSchema.allowedTypes || [];
+    const resolvedType = "string";
+
+    const valid = acceptedTypes.includes(resolvedType);
+
+    props[key] = {
+      kind: value.kind || "static",
+      value: value.value,
+
+      source: value.source || "",
+      path: value.path || "",
+      valueType: resolvedType,
+
+      valid: valid,
+
+      errors: valid
+        ? []
+        : [`Expected ${acceptedTypes.join(", ")} but got ${resolvedType}`],
+    };
+  });
+
+  return props;
+};
