@@ -1,24 +1,31 @@
 import { Text } from "lucide-react";
 import { PropertyRenderer } from "./PropertyRenderer";
-import { NodeFrame } from "./registry";
- 
+import { NodeFrame } from "./NodeFrame";
+import { useSubscribe } from "@/ui/hooks/useSubscribe";
+
 type GenericNodeProps = {
-  node: any;
-  selected?: boolean;
-  onSelect?: (id: string) => void;
-  onUpdate?: (id: string, props: Record<string, any>) => void;
+  id: string;
 };
 
-export function TextNode({
-  node,
-  selected,
-  onSelect,
-  onUpdate,
-}: GenericNodeProps) {
+export function RenderNode({ id }: GenericNodeProps) {
+  // const editor = useFlowEditor();
+
+  const node = useSubscribe((editor) => editor.state.nodes.get(id));
+
+  const selectedComponent = useSubscribe((editor) => editor.selectedComponent);
+
+  if (!node) {
+    return null;
+  }
+
+  const onSelect = () => {};
+  const onUpdate = () => {};
+  const children = node?.childrenIds || [];
+
   return (
     <NodeFrame
       node={node}
-      selected={selected}
+      selected={selectedComponent === id}
       onClick={() => onSelect?.(node.id)}
       label={
         <span className="flex items-center gap-2">
@@ -39,6 +46,9 @@ export function TextNode({
             })
           }
         />
+      ))}
+      {children.map((id: string) => (
+        <RenderNode id={id} />
       ))}
     </NodeFrame>
   );

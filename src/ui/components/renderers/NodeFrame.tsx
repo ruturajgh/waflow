@@ -14,19 +14,6 @@ import {
 import { cn } from "@/lib/utils";
 import { Option } from "lucide-react";
 import { PropertyTable } from "../PropertyTable";
-import { FormNodeRenderer } from "./Form";
-import { TextNode } from "./TextRenderer";
-import { CheckboxGroup } from "./CheckboxGroup";
-
-export const componentRegistry: Record<string, React.ComponentType<any>> = {
-  Form: FormNodeRenderer,
-  TextHeading: TextNode,
-  TextSubheading: TextNode,
-  TextBody: TextNode,
-  TextCaption: TextNode,
-  CheckboxGroup,
-  // Footer,
-};
 
 type NodeFrameProps = {
   selected?: boolean;
@@ -35,7 +22,6 @@ type NodeFrameProps = {
   children: React.ReactNode;
   onClick?: () => void;
 };
-
 export function NodeFrame({
   label,
   node,
@@ -43,6 +29,54 @@ export function NodeFrame({
   children,
   onClick,
 }: NodeFrameProps) {
+  const nodeMeta = node.spec["x-element-meta"];
+
+  const collapsible = nodeMeta?.collapsible ?? true;
+
+  return (
+    <div className="relative">
+      {collapsible ? (
+        <AccordionWrap
+          label={label}
+          node={node}
+          selected={selected}
+          onClick={onClick}
+        >
+          {children}
+        </AccordionWrap>
+      ) : (
+        <>
+          <div
+            onClick={onClick}
+            className={cn(
+              "rounded-md px-2 py-1.5 transition-colors",
+              "hover:bg-muted/50",
+              selected && "bg-muted",
+            )}
+          >
+            {label}
+          </div>
+
+          <TreeChildren>{children}</TreeChildren>
+        </>
+      )}
+    </div>
+  );
+}
+
+function TreeChildren({ children }: { children: React.ReactNode }) {
+  if (!children) {
+    return null;
+  }
+
+  return (
+    <div className="ml-4 border-l-2 pl-2">
+      <div className="space-y-1 py-1">{children}</div>
+    </div>
+  );
+}
+
+function AccordionWrap({ label, selected, onClick, children, node }) {
   return (
     <Accordion
       onClick={onClick}
@@ -51,8 +85,7 @@ export function NodeFrame({
         "hover:bg-muted/50",
         selected && "ring-1  ring-primary",
       )}
-      type="single"
-      collapsible
+      type="multiple"
     >
       <AccordionItem value="item-1">
         <AccordionTrigger className=" items-center gap-2 ">

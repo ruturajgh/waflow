@@ -130,6 +130,11 @@ export default {
 
     additionalProperties: false,
 
+    "x-element-meta": {
+      collapsible: false,
+      draggable: false,
+    },
+
     properties: {
       type: {
         type: "string",
@@ -138,6 +143,9 @@ export default {
 
         default: "SingleColumnLayout",
 
+        ["x-ui"]: {
+          editable: false,
+        },
         "x-binding": {
           allowed: false,
         },
@@ -153,6 +161,11 @@ export default {
 
     additionalProperties: false,
 
+    "x-element-meta": {
+      collapsible: false,
+      draggable: false,
+    },
+
     properties: {
       name: {
         type: "string",
@@ -161,6 +174,9 @@ export default {
       type: {
         type: "string",
         default: "Form",
+        ["x-ui"]: {
+          editable: false,
+        },
       },
       "init-values": {
         type: "object",
@@ -666,7 +682,8 @@ export default {
         ],
       },
     ],
-
-    "x-dragable": false,
+    "x-element-meta": {
+      draggable: false,
+    },
   },
 };

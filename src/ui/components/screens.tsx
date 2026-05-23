@@ -64,7 +64,7 @@ function Screen({ id, onClick }: any) {
 
   return (
     <div
-      className={`${isSelected ? "border-black border-2" : "none"} bg-gray-300  rounded-md`}
+      className={`${isSelected ? " border-2" : "none"} bg-card rounded-md`}
       onClick={() => onClick(id)}
     >
       {screen.props.title.value}

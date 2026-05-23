@@ -4,12 +4,10 @@ import { useSubscribe } from "../hooks/useSubscribe";
 import { AddNodeDropdown } from "./AddNodeDropdown";
 import { BooleanAtom } from "./renderers/atoms/Boolean";
 import { EditableText } from "./renderers/atoms/Text";
-import { NodeRenderer } from "./Render";
+import { RenderNode } from "./renderers/RenderNode";
 
 export const Nodes = (props: any) => {
   const editor = useFlowEditor();
-
-  const screen = useSubscribe((e) => e.state.nodes.get(e.selectedScreen));
 
   return (
     <div
@@ -36,25 +34,23 @@ export const Nodes = (props: any) => {
           <AddNodeDropdown onAdd={editor.addNode} />
         </span>
 
-        <NodeList screenLayoutId={screen?.childrenIds?.[0]} />
+        <NodeList />
 
-        <ScreenProperties data={screen} setData={editor.updateNodeProps} />
+        {/* <ScreenProperties data={screen} setData={editor.updateNodeProps} /> */}
       </Tabs>
     </div>
   );
 };
 
-function NodeList({ screenLayoutId }: any) {
-  const layout = useSubscribe((editor) =>
-    editor.state.nodes.get(screenLayoutId),
-  );
+function NodeList() {
+  const screen = useSubscribe((e) => e.state.nodes.get(e.selectedScreen));
 
-  const componentIds = layout?.childrenIds || [];
+  const children = screen?.childrenIds || [];
 
   return (
     <TabsContent value="Nodes" className="">
-      {componentIds.map((id: string) => (
-        <NodeRenderer key={id} id={id} />
+      {children.map((id: string) => (
+        <RenderNode key={id} id={id} />
       ))}
     </TabsContent>
   );
