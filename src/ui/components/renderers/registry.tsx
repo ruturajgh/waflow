@@ -16,6 +16,7 @@ import { Option } from "lucide-react";
 import { PropertyTable } from "../PropertyTable";
 import { FormNodeRenderer } from "./Form";
 import { TextNode } from "./TextRenderer";
+import { CheckboxGroup } from "./CheckboxGroup";
 
 export const componentRegistry: Record<string, React.ComponentType<any>> = {
   Form: FormNodeRenderer,
@@ -23,7 +24,7 @@ export const componentRegistry: Record<string, React.ComponentType<any>> = {
   TextSubheading: TextNode,
   TextBody: TextNode,
   TextCaption: TextNode,
-  // CheckboxGroup,
+  CheckboxGroup,
   // Footer,
 };
 
