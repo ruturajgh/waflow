@@ -28,12 +28,7 @@ export function Binder({ property, onUpdate }) {
             <Label>Source</Label>{" "}
             <SelectAtom
               value={property.source ?? ""}
-              onChange={(e) =>
-                onUpdate?.({
-                  ...property,
-                  source: e,
-                })
-              }
+              onChange={(e) => onUpdate?.(e)}
               options={sourceOptions}
             />
           </div>
@@ -43,12 +38,7 @@ export function Binder({ property, onUpdate }) {
               <Label>Path</Label>
               <Input
                 defaultValue={property?.path || ""}
-                onBlur={(e) =>
-                  onUpdate?.({
-                    ...property,
-                    path: e.target.value,
-                  })
-                }
+                onBlur={(e) => onUpdate?.(e)}
               />
             </div>
           ) : (

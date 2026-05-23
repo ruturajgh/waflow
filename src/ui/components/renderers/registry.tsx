@@ -13,19 +13,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Option } from "lucide-react";
-import { FormNodeRenderer } from "./Form";
-import { TextBody } from "./TextBody";
-import { TextCaption } from "./TextCaption";
-import { TextHeading } from "./TextHeading";
-import { TextSubheading } from "./TextSubheading";
 import { PropertyTable } from "../PropertyTable";
+import { FormNodeRenderer } from "./Form";
+import { TextNode } from "./TextRenderer";
 
 export const componentRegistry: Record<string, React.ComponentType<any>> = {
   Form: FormNodeRenderer,
-  TextHeading,
-  TextSubheading,
-  TextBody,
-  TextCaption,
+  TextHeading: TextNode,
+  TextSubheading: TextNode,
+  TextBody: TextNode,
+  TextCaption: TextNode,
   // CheckboxGroup,
   // Footer,
 };

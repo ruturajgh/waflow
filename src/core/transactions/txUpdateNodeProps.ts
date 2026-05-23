@@ -1,15 +1,19 @@
 import type { EditorState } from "../editor";
 import type { Transaction } from "../transactionManager";
-import type { Node } from "../node";
+
+type Patch = {
+  prop: string;
+  oldValue: any;
+  newValue: any;
+};
 
 export class TxUpdateNodeProps implements Transaction {
   private nodeId: string;
-  private props: any;
-  private previousProps: any;
+  private patch: Patch;
 
-  constructor(nodeId: string, props: Record<string, any>) {
+  constructor(nodeId: string, patch: Patch) {
     this.nodeId = nodeId;
-    this.props = props;
+    this.patch = patch;
   }
 
   apply(state: EditorState): EditorState {
@@ -17,28 +21,60 @@ export class TxUpdateNodeProps implements Transaction {
 
     if (!node) return state;
 
-    this.previousProps = node.props;
+    const newProps = applyPatch(node.props, {
+      prop: this.patch.prop,
+      value: this.patch.newValue,
+    });
 
-    const updated: Node = {
-      ...node,
-      props: {
-        ...node.props,
-        ...this.props,
-      },
-    };
     return {
       ...state,
-      nodes: new Map(state.nodes).set(this.nodeId, updated),
+      nodes: new Map(state.nodes).set(this.nodeId, {
+        ...node,
+        props: newProps,
+      }),
     };
   }
 
-  invert(state: EditorState): Transaction {
-    const node = state.nodes.get(this.nodeId);
+  invert(): Transaction {
+    return new TxUpdateNodeProps(this.nodeId, {
+      prop: this.patch.prop,
+      oldValue: this.patch.newValue,
+      newValue: this.patch.oldValue,
+    });
+  }
+}
 
-    if (!node) {
-      throw new Error("Node not found");
+function applyPatch(props, patch) {
+  const path = Array.isArray(patch.prop) ? patch.prop : patch.prop.split(".");
+
+  function update(obj, i) {
+    const key = path[i];
+
+    // leaf update
+    if (i === path.length - 1) {
+      if (obj?.[key] === patch.value) {
+        return obj;
+      }
+
+      return {
+        ...obj,
+        [key]: patch.value,
+      };
     }
 
-    return new TxUpdateNodeProps(this.nodeId, this.previousProps);
+    const currentChild = obj?.[key];
+    const nextChild = update(currentChild ?? {}, i + 1);
+
+    // structural sharing
+    if (nextChild === currentChild) {
+      return obj;
+    }
+
+    return {
+      ...obj,
+      [key]: nextChild,
+    };
   }
+
+  return update(props, 0);
 }

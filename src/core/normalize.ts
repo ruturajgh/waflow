@@ -14,7 +14,7 @@ function buildComponent(
   parentId: string,
   nodes: Map<string, Node>,
 ) {
-  const node = createNode(child.type, child, parentId);
+  const node = createNode(child.type, child, {}, parentId);
   nodes.set(node.id, node);
 
   for (const grandChild of child.children ?? []) {
